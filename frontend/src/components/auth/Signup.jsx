@@ -1,13 +1,14 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Container from 'react-bootstrap/Container';
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
-import "./Login.css";
+import "./Signup.css";
 
 
 // https://sst.dev/chapters/create-a-login-page.html
 
-export default function Login() {
+export default function Signup() {
     " State variables, stores the user inputs"
     const [email, setEmail] = useState("");
     const [username, setUsername] = useState("");
@@ -17,8 +18,11 @@ export default function Login() {
         return email.length > 0 && password.length > 0;
     }
 
+    const navigate = useNavigate();
+
     function handleSubmit(event) {
         event.preventDefault();
+        navigate("/login");
     }
 
     return (
@@ -26,7 +30,7 @@ export default function Login() {
 
             <Form className="Login">
                 <img className="Logo" src="" alt=""/>
-                <h1>Sign In</h1>
+                <h1>Sign Up</h1>
                 <Form.Group size="lg" controlId="email">
                 <Form.Label>Email</Form.Label>
                 <Form.Control
@@ -44,7 +48,15 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                 />
                 </Form.Group>
-                <Button block="true" size="lg" type="submit" disabled={!validateForm()}>
+                <Form.Group size="lg" controlId="password">
+                <Form.Label>Confirm Password</Form.Label>
+                <Form.Control
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                </Form.Group>
+                <Button onClick={handleSubmit} block="true" size="lg" type="submit" disabled={!validateForm()}>
                     Submit
                 </Button>
             </Form>
