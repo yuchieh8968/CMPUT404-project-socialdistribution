@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react"
-import CreatePost from "../post/CreatePost";
+import React from "react"
 
 export default function Inbox() {
 
     return (
         <div>
-            <CreatePost />
+           <h1> THIS IS THE INBOX </h1>
         </div>
     );
 }

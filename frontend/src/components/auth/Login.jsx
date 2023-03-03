@@ -22,7 +22,7 @@ export default function Login() {
 
     function handleSubmit(event) {
         event.preventDefault();
-        navigate("/inbox");
+        navigate("/home");
     }
     function handleSignUp(event) {
         navigate("/signup");
