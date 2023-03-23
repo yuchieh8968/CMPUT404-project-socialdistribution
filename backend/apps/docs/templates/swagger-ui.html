@@ -13,7 +13,9 @@
     {% else %}
       <p>Welcome, stranger. Please <a href="/api/auth/login">log-in</a><br></p>
     {% endif %}
-    <p>Or, view admin page <a href='/admin'>here</a></p>
+    {% if user.is_admin %}
+      <p>Or, view admin page <a href='/admin'>here</a></p>
+    {% endif %}
     </div>
     <div id="swagger-ui"></div>
     <script src="//unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
