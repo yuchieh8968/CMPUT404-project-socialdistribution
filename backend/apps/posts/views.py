@@ -11,39 +11,121 @@ from django.http import Http404
 from .serializers import PostSerializer
 from rest_framework import status
 from rest_framework.exceptions import NotAuthenticated
+from rest_framework.viewsets import ModelViewSet
 
 
 # Create your views here.
 
 
-@api_view(['GET'])
-def posts_paginated(request: Request, author_id: str, page: int = 10, size: int = 5):
+# class Post(ModelViewSet):
+#     # get, post, delete, put
+class Author_Post_Single(APIView):
+
+    def get_object(self, author_id, post_id, format=None):
+        """
+        Gets a query from the database.
+        """
+        try:
+            query_set = Post.objects.get(id=post_id, author_id=author_id)
+            return query_set
+        except:
+            raise Http404
+
+    def get(self, request, author_id, post_id, format=None):
+        """
+        /authors/{author_id}/posts/{post_id}
+
+        GET (local, remote) get the public post whose id is POST_ID
+        """
+        query_set = self.get_object(author_id, post_id)
+        serializer = PostSerializer(query_set)
+        return Response(serializer.data)
+
     """
-    /authors/{AUTHOR_ID}/posts?page=10&size=5
-
-    GET (local, remote) get the recent posts from author AUTHOR_ID (paginated)
+    ALERT
+    For making a post, you have to pass all the ids in the json
     """
-    page = request.GET.get('page', '')
-    size = request.GET.get('size', '')
 
-    if page == '':
-        page = 10
-    if size == '':
-        size = 5
+    def post(self, request, author_id, post_id, format=None):
+        """
+        POST (local) update the post whose id is POST_ID (must be authenticated).
+        """
+        # Use these to check if we are authenticated
+        # better yet is to use permissions to control individual users access https://www.django-rest-framework.org/api-guide/permissions/
+        # this is only a basic check to see if we are logged in to a user (doesn't need to be author_id)
+        user = str(request.user)
+        auth = str(request.auth)
+        if user == "AnonymousUser" and auth == "None":
+            # return redirect(f'/api-auth/login/?next=/authors/{author_id}/posts/{post_id}') # redirect to login page, set the next page after successful login.
+            raise NotAuthenticated # or can just send a 403 or 401 https://www.django-rest-framework.org/api-guide/exceptions/#notauthenticated
+        return Response({"message": f"Updating single post {post_id} from author {author_id}. Note that user = {user} and auth = {auth}"})
 
-    try:
-        page = int(page)
-        assert page > 0
-    except Exception as e:
-        page = 10
+    def put(self, request, author_id, post_id, format=None):
+        """
+        /authors/{author_id}/posts/{post_id}
 
-    try:
-        size = int(size)
-        assert size > 0
-    except Exception as e:
-        size = 5
+        PUT (local) create a post where its id is POST_ID
+        """
+        query_set = self.get_object(author_id, post_id)
+        serializer = PostSerializer(query_set, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response({"message": f"Viewing {page} pages with {size} posts per page for author {author_id}"})
+    def delete(self, request, author_id, post_id, format=None):
+        """
+        /authors/{author_id}/posts/{post_id}
+
+        DELETE (local) remove the post whose id is POST_ID
+        """
+        query_set = self.get_object(author_id, post_id)
+        query_set.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+# class ImagePost(APIView):
+    
+#     def get(self, request, author_id, post_id, format=None):
+#         """
+#         /authors/{author_id}/posts/{post_id}/image
+
+#         GET (local, remote) get the public post converted to binary as an image
+#         """
+#         # return 404 if not an image
+#         return Response({"message": f"Viewing image post with post_id {post_id} and author_id {author_id}"})
+
+
+
+# @api_view(['GET'])
+# def posts_paginated(request: Request, author_id: str, page: int = 10, size: int = 5):
+#     """
+#     /authors/{AUTHOR_ID}/posts?page=10&size=5
+
+#     GET (local, remote) get the recent posts from author AUTHOR_ID (paginated)
+#     """
+#     page = request.GET.get('page', '')
+#     size = request.GET.get('size', '')
+
+#     if page == '':
+#         page = 10
+#     if size == '':
+#         size = 5
+
+#     try:
+#         page = int(page)
+#         assert page > 0
+#     except Exception as e:
+#         page = 10
+
+#     try:
+#         size = int(size)
+#         assert size > 0
+#     except Exception as e:
+#         size = 5
+
+#     return Response({"message": f"Viewing {page} pages with {size} posts per page for author {author_id}"})
 
 
 # @api_view(['GET', 'POST'])
@@ -148,71 +230,7 @@ class Post_All(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class Author_Post_Single(APIView):
 
-    def get_object(self, author_id, post_id, format=None):
-        """
-        Gets a query from the database.
-        """
-        try:
-            query_set = Post.objects.get(id=post_id, author_id=author_id)
-            return query_set
-        except:
-            Post.DoesNotExist
-
-            raise Http404
-
-    def get(self, request, author_id, post_id, format=None):
-        """
-        /authors/{author_id}/posts/{post_id}
-
-        GET (local, remote) get the public post whose id is POST_ID
-        """
-        query_set = self.get_object(author_id, post_id)
-        serializer = PostSerializer(query_set)
-        return Response(serializer.data)
-
-    """
-    ALERT
-    For making a post, you have to pass all the ids in the json
-    """
-
-    def post(self, request, author_id, post_id, format=None):
-        """
-        POST (local) update the post whose id is POST_ID (must be authenticated).
-        """
-        # Use these to check if we are authenticated
-        # better yet is to use permissions to control individual users access https://www.django-rest-framework.org/api-guide/permissions/
-        # this is only a basic check to see if we are logged in to a user (doesn't need to be author_id)
-        user = str(request.user)
-        auth = str(request.auth)
-        if user == "AnonymousUser" and auth == "None":
-            # return redirect(f'/api-auth/login/?next=/authors/{author_id}/posts/{post_id}') # redirect to login page, set the next page after successful login.
-            raise NotAuthenticated # or can just send a 403 or 401 https://www.django-rest-framework.org/api-guide/exceptions/#notauthenticated
-        return Response({"message": f"Updating single post {post_id} from author {author_id}. Note that user = {user} and auth = {auth}"})
-
-    def put(self, request, author_id, post_id, format=None):
-        """
-        /authors/{author_id}/posts/{post_id}
-
-        PUT (local) create a post where its id is POST_ID
-        """
-        query_set = self.get_object(author_id, post_id)
-        serializer = PostSerializer(query_set, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, author_id, post_id, format=None):
-        """
-        /authors/{author_id}/posts/{post_id}
-
-        DELETE (local) remove the post whose id is POST_ID
-        """
-        query_set = self.get_object(author_id, post_id)
-        query_set.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 

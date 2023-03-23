@@ -38,10 +38,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'apps.docs',
-    'apps.posts',
+    # 'guardian',
     'apps.authors',
+    'apps.comments',
+    'apps.docs',
+    'apps.followers',
+    'apps.inbox',
+    'apps.likes',
+    'apps.posts',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'social_distribution.pagination.CustomPagination',
+}
+
+LOGIN_REDIRECT_URL = "/api/docs/"
+LOGOUT_REDIRECT_URL = "/api/docs/"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -89,6 +101,8 @@ DATABASES = {
 }
 
 
+AUTH_USER_MODEL = 'authors.Author'
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -106,6 +120,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+# AUTHENTICATION_BACKENDS = [
+#     'django.contrib.auth.backends.ModelBackend',
+#     'guardian.backends.ObjectPermissionBackend',
+# ]
 
 
 # Internationalization

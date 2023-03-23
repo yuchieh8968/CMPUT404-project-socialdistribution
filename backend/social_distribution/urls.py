@@ -15,18 +15,50 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
-from apps.authors.views import authors_paginated
-from apps.posts.views import Post_All
+from apps.authors.views import Author_All, Author_Individual
+from django.views.generic.base import RedirectView
 
 
 urlpatterns = [
 
+    # redirect home to api/docs/
+    # https://stackoverflow.com/questions/14959217/django-url-redirect
+    path('', RedirectView.as_view(url='api/docs/', permanent=False), name='index'),
+
+    # admin, auth, api-schema, and api docs
     path('admin/', admin.site.urls),                                # Django admin site
-    path('api-auth/', include('rest_framework.urls')),              # Prefix for API login and logout
-    path('api-schema/', get_schema_view(), name='API Schema'),      # API schema endpoint (used for dynamic swagger docs generation)
-    path('docs/', include('apps.docs.urls')),                       # Prefix for documentation pages (currently /docs/api/ only)
-    path('authors/', include('apps.authors.urls')),                 # Pretty much every other URI starts with this author prefix
-    path('authors', authors_paginated, name='Authors Paginated'),   # Project spec indicates there shouldn't be a trailing slash on paginated authors, so here it is
-    path('posts/', Post_All.as_view(), name='TEST URL FOR POSTS')   # Test url for posts
+    path('api/auth/', include('rest_framework.urls')),              # Prefix for API login and logout
+    path('api/schema/', get_schema_view(), name='API Schema'),      # API schema endpoint (used for dynamic swagger docs generation)
+    path('api/docs/', TemplateView.as_view(
+        template_name='swagger-ui.html',
+        extra_context={'schema_url':'API Schema'}
+    ), name='swagger-ui'),                                          # Prefix for documentation pages (currently /docs/api/ only)
+
+
+    # authors
+    path('api/authors/', Author_All.as_view(), name="All authors"),                                                         # All authors
+    path('api/authors/<str:author_id>/', Author_Individual.as_view(), name="Single author"),                                # Single author
+
+    # # followers
+    # path('api/authors/<str:author_id>/followers', XXX, name="Author_id's followers"),                                       # Author_id's followers
+    # path('api/authors/<str:author_id>/followers/<str:foreign_author_id>', XXX, name="Follower of author_id"),               # Specific follower of author_id
+
+    # # posts
+    # path('api/authors/<str:author_id>/posts/', XXX, name="Recent posts by author"),                                         # Recent posts from author, or create new one with new id
+    # path('api/authors/<str:author_id>/posts/<str:post_id>', XXX, name="Specific post"),                                     # Specific post
+    # path('api/authors/<str:author_id>/posts/<str:post_id>/image', XXX, name="Image post"),                                  # Image post
+
+    # # comments
+    # path('api/authors/<str:author_id>/posts/<str:post_id>/comments', XXX, name="Comments on post"),                         # Comments on post
+
+    # # likes
+    # path('api/authors/<str:author_id>/inbox/', XXX, name="Send like to author"),                                            # Send like to author
+    # path('api/authors/<str:author_id>/posts/<str:post_id>/likes', XXX, name="Likes on post"),                               # Get likes on post
+    # path('api/authors/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes', XXX, name="Likes on comment"),  # Get likes on comment
+    # path('api/authors/<str:author_id>/liked', XXX, name="Author likes"),                                                    # See what author_id has liked
+
+    # # inbox
+    # path('api/authors/<str:author_id>/inbox', XXX, name="Inbox"),                                                           # Inbox = new posts from who you follow
 ]

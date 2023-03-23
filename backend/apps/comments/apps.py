@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class InboxConfig(AppConfig):
+class CommentsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.inbox'
+    name = 'apps.comments'
