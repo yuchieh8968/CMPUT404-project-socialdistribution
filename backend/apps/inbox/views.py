@@ -5,11 +5,11 @@ from rest_framework.request import Request
 
 # Create your views here.
 @api_view(['GET'])
-def inbox(request: Request, author_id: str):
+def inbox(request: Request, author_id: str, post_url: str):
     """
-    /inbox
+    /authors/{author_id}/inbox
 
-    GET (local, remote): retrieve AUTHOR_ID profile
+    GET (local, remote): retrieve posts in inbox
 
     """
 
