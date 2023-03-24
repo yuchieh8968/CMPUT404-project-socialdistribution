@@ -18,7 +18,9 @@ from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveMode
 from urllib.parse import unquote, quote
 from datetime import datetime
 import uuid
-
+# from rest_framework.decorators import authentication_classes, permission_classes
+# from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from apps.authors.remoteauth import RemoteAuth
 
 
 # Create your views here.
@@ -28,7 +30,7 @@ class Post_Individual(GenericAPIView):
     serializer_class = PostSerializer
     # lookup_field = 'id'
     # lookup_url_kwarg = 'post_id'
-
+    authentication_classes = []
 
     def get(self, request, author_id, post_id, format=None):
         """
@@ -39,14 +41,21 @@ class Post_Individual(GenericAPIView):
         # print(f"looking for post with id={post_id}")
         # print(f"looking for post with authorid={author_id}")
 
-        try:
-            post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
-        except Http404:
-            if str(post_id).endswith('/'):
-                post_id = post_id[:-1]
-                post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
-            else:
-                raise Http404
+        is_remote = RemoteAuth(request=request)
+        if not is_remote:
+            response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
+            response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
+            return response
+
+        # try:
+        #     post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        # except Http404:
+        #     if str(post_id).endswith('/'):
+        #         post_id = post_id[:-1]
+        #         post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        #     else:
+        #         raise Http404
+        post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
         serializer = PostSerializer(post)
         return Response(serializer.data)
 
@@ -56,14 +65,15 @@ class Post_Individual(GenericAPIView):
         
         POST (local): update the post whose id is POST_ID (must be authenticated)
         """
-        try:
-            post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
-        except Http404:
-            if str(post_id).endswith('/'):
-                post_id = post_id[:-1]
-                post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
-            else:
-                raise Http404
+        # try:
+        #     post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        # except Http404:
+        #     if str(post_id).endswith('/'):
+        #         post_id = post_id[:-1]
+        #         post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        #     else:
+        #         raise Http404
+        post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
 
         # do we have permission to edit this post?
 
@@ -190,11 +200,19 @@ class All_Posts_By_Author(ListAPIView):
     serializer_class = PostSerializer
     # lookup_field = 'author_id'
     # lookup_url_kwarg = 'author_id'
+    authentication_classes = []
 
     def get_queryset(self):
         return Post.objects.all()
     
     def get(self, request, author_id):
+        
+        is_remote = RemoteAuth(request=request)
+        if not is_remote:
+            response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
+            response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
+            return response
+
         return super().get(request, author_id=author_id)
 
 

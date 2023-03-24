@@ -6,6 +6,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+from apps.authors.remoteauth import RemoteAuth
 
 
 # Create your views here.
@@ -17,9 +18,18 @@ class Author_All(ListAPIView):
     GET (local, remote): Used to view all authors
     """
     serializer_class = AuthorSerializer
+    authentication_classes = []
 
     def get_queryset(self):
         return Author.objects.all()
+    
+    def get(self, request, *args, **kwargs):
+        is_remote = RemoteAuth(request=request)
+        if not is_remote:
+            response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
+            response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
+            return response
+        return super().get(request)
 
 
 class Author_Individual(GenericAPIView):

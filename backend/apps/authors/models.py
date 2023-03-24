@@ -5,6 +5,10 @@ from django.contrib.auth.base_user import BaseUserManager
 from urllib.parse import quote
 # Create your models here.
 
+class AllowedRemotes(models.Model):
+    username = models.CharField(primary_key=True, max_length=10, unique=True)
+    password = models.CharField(max_length=10, blank=False, null= False)
+
 # https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#custom-users-admin-full-example
 class MyUserManager(BaseUserManager):
     def create_user(self, id, url, host, displayName, password=None):

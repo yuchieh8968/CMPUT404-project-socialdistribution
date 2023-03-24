@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Author
+from .models import Author, AllowedRemotes
 
 from django import forms
 from django.contrib.auth.models import Group
@@ -17,9 +17,6 @@ class CustomUserCreationForm(forms.ModelForm):
     url = forms.URLField(label='URL', widget=forms.URLInput, required=True)
     host = forms.URLField(label='Host', widget=forms.URLInput, required=True)
     displayName = forms.CharField(label='DisplayName', widget=forms.TextInput, required=True)
-
-
-
 
     class Meta:
         model = Author
@@ -88,3 +85,4 @@ class UserAdmin(BaseUserAdmin):
 
 # Register your models here.
 admin.site.register(Author, UserAdmin)
+admin.site.register(AllowedRemotes)
