@@ -1,10 +1,10 @@
 import React from "react"
 
-export default function Inbox() {
+export default function Profile() {
 
     return (
         <div>
-           <h1> THIS IS THE INBOX </h1>
+           <h1> This is the profile page </h1>
         </div>
     );
 }

@@ -5,7 +5,7 @@ import {
   from 'react-router-dom';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
-import Inbox from './components/inbox/Inbox';
+import Profile from './components/profile/Profile';
 import Home from './components/home/Home';
 
 
@@ -17,7 +17,7 @@ function App() {
             <Route exact path="/" element={<Navigate to="/login" />} />
             <Route path="/login" element={(<Login />)} />
             <Route path="/signup" element={(<Signup />)} />
-            <Route path="/inbox" element={(<Inbox />)} />
+            <Route path="/profile" element={(<Profile />)} />
             <Route path="/home" element={(<Home />)} />
           </Routes>
       </Router>
