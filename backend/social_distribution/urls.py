@@ -14,18 +14,30 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, register_converter
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 from apps.authors.views import Author_All, Author_Individual
 from apps.posts.views import Post_Individual, All_Posts_By_Author
 from django.views.generic.base import RedirectView
 
+class AuthorIDConverter:
+      regex = r".+?(?=\/posts)"
+
+      def to_python(self, value: str) -> str:
+          return value
+
+      def to_url(self, value: str) -> str:
+          return value
+
+register_converter(AuthorIDConverter, "author_id_path")
+
+
 
 urlpatterns = [
 
     # posts
-    path('api/authors/<path:author_id>/posts/<path:post_id>', Post_Individual.as_view(), name="Specific post"),                                     # Specific post
+    path('api/authors/<author_id_path:author_id>/posts/<path:post_id>', Post_Individual.as_view(), name="Specific post"),                                     # Specific post
     path('api/authors/<path:author_id>/posts/', All_Posts_By_Author.as_view(), name="Recent posts by author"),                                         # Recent posts from author, or create new one with new id
 
     # authors

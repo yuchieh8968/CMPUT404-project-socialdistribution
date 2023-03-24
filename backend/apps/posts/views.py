@@ -36,7 +36,13 @@ class Post_Individual(GenericAPIView):
         
         GET (local, remote): get the public post whose id is POST_ID
         """
-        post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        # print(f"looking for post with id={post_id}")
+        # print(f"looking for post with authorid={author_id}")
+
+        try:
+            post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        except Http404:
+            post = get_object_or_404(Post.objects.all(), id=post_id[:-1], author_id=author_id)
         serializer = PostSerializer(post)
         return Response(serializer.data)
 
