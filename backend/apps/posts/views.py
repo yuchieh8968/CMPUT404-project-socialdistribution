@@ -21,9 +21,33 @@ import uuid
 # from rest_framework.decorators import authentication_classes, permission_classes
 # from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from apps.authors.remoteauth import RemoteAuth
+from django.shortcuts import render
+from django.template import loader
+import requests
+import json
+
 
 
 # Create your views here.
+
+# def GuiPost(request, author_text, post_text):
+def GuiPost(request):
+    
+
+    r = requests.get('https://sd7-api.herokuapp.com/api/authors/d3bb924f-f37b-4d14-8d8e-f38b09703bab/posts/9095cfd8-8f6a-44aa-b75b-7d2abfb5f694/', auth=('node01', 'P*ssw0rd!'))
+    # print(r.text)
+    
+    post = r.json()
+    # post = json.loads(r.json)
+
+    # build the post ID and the author ID for the api call
+    # post_id = 
+
+    # get the post
+    # post = Post.objects.get(id=post_id)
+    context = {'post': post}
+    return render(request, 'view-post.html', context)
+
 
 
 class Post_Individual(GenericAPIView):

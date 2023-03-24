@@ -18,7 +18,7 @@ from django.urls import include, path, register_converter
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 from apps.authors.views import Author_All, Author_Individual
-from apps.posts.views import Post_Individual, All_Posts_By_Author
+from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost
 from django.views.generic.base import RedirectView
 
 class AuthorIDConverter:
@@ -57,8 +57,8 @@ urlpatterns = [
         extra_context={'schema_url':'API Schema'}
     ), name='swagger-ui'),                                          # Prefix for documentation pages (currently /docs/api/ only)
 
-
-    
+    # path('authors/<str:author_text>/posts/<str:post_text>', GuiPost, name="Gui Post"),
+    path('remote-post', GuiPost, name="Gui Post"),
 
     # # followers
     # path('api/authors/<path:author_id>/followers', XXX, name="Author_id's followers"),                                       # Author_id's followers
