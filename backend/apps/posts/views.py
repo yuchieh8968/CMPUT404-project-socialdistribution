@@ -42,7 +42,11 @@ class Post_Individual(GenericAPIView):
         try:
             post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
         except Http404:
-            post = get_object_or_404(Post.objects.all(), id=post_id[:-1], author_id=author_id)
+            if str(post_id).endswith('/'):
+                post_id = post_id[:-1]
+                post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+            else:
+                raise Http404
         serializer = PostSerializer(post)
         return Response(serializer.data)
 
@@ -52,8 +56,14 @@ class Post_Individual(GenericAPIView):
         
         POST (local): update the post whose id is POST_ID (must be authenticated)
         """
-        post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
-
+        try:
+            post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        except Http404:
+            if str(post_id).endswith('/'):
+                post_id = post_id[:-1]
+                post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+            else:
+                raise Http404
 
         # do we have permission to edit this post?
 
