@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
+from urllib.parse import quote
 # Create your models here.
 
 # https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#custom-users-admin-full-example
@@ -50,12 +51,12 @@ class MyUserManager(BaseUserManager):
 
 
 class Author(AbstractBaseUser):
-    id = models.CharField(primary_key=True, max_length=255, unique=True)
+    id = models.URLField(primary_key=True, max_length=255, unique=True)
     url = models.URLField(max_length=255, blank=True, unique=True)
-    host = models.CharField(max_length=200, blank=True)
-    displayName = models.CharField(max_length=200, blank=True)
+    host = models.URLField(max_length=200, blank=True)
+    displayName = models.CharField(max_length=200, blank=False, null=False, unique=True, editable=True)
     github = models.URLField(max_length=255, blank=True, null=True)
-    profileImage = models.ImageField(blank=True, null=True)
+    profileImage = models.URLField(blank=True, null=True)
 
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -80,6 +81,11 @@ class Author(AbstractBaseUser):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
+    
+    # def save(self, *args, **kwargs):
+    #     if self._state.adding:
+    #         self.id = quote(self.id, safe='')
+    #         super(Author, self).save(*args, **kwargs)
 
     @property
     def is_staff(self):

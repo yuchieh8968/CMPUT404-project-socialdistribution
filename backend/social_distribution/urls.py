@@ -18,10 +18,19 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 from apps.authors.views import Author_All, Author_Individual
+from apps.posts.views import Post_Individual, All_Posts_By_Author
 from django.views.generic.base import RedirectView
 
 
 urlpatterns = [
+
+    # posts
+    path('api/authors/<path:author_id>/posts/<path:post_id>', Post_Individual.as_view(), name="Specific post"),                                     # Specific post
+    path('api/authors/<path:author_id>/posts/', All_Posts_By_Author.as_view(), name="Recent posts by author"),                                         # Recent posts from author, or create new one with new id
+
+    # authors
+    path('api/authors/<path:author_id>/', Author_Individual.as_view(), name="Single author"),                                # Single author
+    path('api/authors/', Author_All.as_view(), name="All authors"),                                                         # All authors
 
     # redirect home to api/docs/
     # https://stackoverflow.com/questions/14959217/django-url-redirect
@@ -37,28 +46,24 @@ urlpatterns = [
     ), name='swagger-ui'),                                          # Prefix for documentation pages (currently /docs/api/ only)
 
 
-    # authors
-    path('api/authors/', Author_All.as_view(), name="All authors"),                                                         # All authors
-    path('api/authors/<str:author_id>/', Author_Individual.as_view(), name="Single author"),                                # Single author
+    
 
     # # followers
-    # path('api/authors/<str:author_id>/followers', XXX, name="Author_id's followers"),                                       # Author_id's followers
-    # path('api/authors/<str:author_id>/followers/<str:foreign_author_id>', XXX, name="Follower of author_id"),               # Specific follower of author_id
+    # path('api/authors/<path:author_id>/followers', XXX, name="Author_id's followers"),                                       # Author_id's followers
+    # path('api/authors/<path:author_id>/followers/<path:foreign_author_id>', XXX, name="Follower of author_id"),               # Specific follower of author_id
 
     # # posts
-    # path('api/authors/<str:author_id>/posts/', XXX, name="Recent posts by author"),                                         # Recent posts from author, or create new one with new id
-    # path('api/authors/<str:author_id>/posts/<str:post_id>', XXX, name="Specific post"),                                     # Specific post
-    # path('api/authors/<str:author_id>/posts/<str:post_id>/image', XXX, name="Image post"),                                  # Image post
+    # path('api/authors/<path:author_id>/posts/<path:post_id>/image', XXX, name="Image post"),                                  # Image post
 
     # # comments
-    # path('api/authors/<str:author_id>/posts/<str:post_id>/comments', XXX, name="Comments on post"),                         # Comments on post
+    # path('api/authors/<path:author_id>/posts/<path:post_id>/comments', XXX, name="Comments on post"),                         # Comments on post
 
     # # likes
-    # path('api/authors/<str:author_id>/inbox/', XXX, name="Send like to author"),                                            # Send like to author
-    # path('api/authors/<str:author_id>/posts/<str:post_id>/likes', XXX, name="Likes on post"),                               # Get likes on post
-    # path('api/authors/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes', XXX, name="Likes on comment"),  # Get likes on comment
-    # path('api/authors/<str:author_id>/liked', XXX, name="Author likes"),                                                    # See what author_id has liked
+    # path('api/authors/<path:author_id>/inbox/', XXX, name="Send like to author"),                                            # Send like to author
+    # path('api/authors/<path:author_id>/posts/<path:post_id>/likes', XXX, name="Likes on post"),                               # Get likes on post
+    # path('api/authors/<path:author_id>/posts/<path:post_id>/comments/<path:comment_id>/likes', XXX, name="Likes on comment"),  # Get likes on comment
+    # path('api/authors/<path:author_id>/liked', XXX, name="Author likes"),                                                    # See what author_id has liked
 
     # # inbox
-    # path('api/authors/<str:author_id>/inbox', XXX, name="Inbox"),                                                           # Inbox = new posts from who you follow
+    # path('api/authors/<path:author_id>/inbox', XXX, name="Inbox"),                                                           # Inbox = new posts from who you follow
 ]
