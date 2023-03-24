@@ -9,7 +9,7 @@
   <body>
     <div>
     {% if user.is_active %}
-      <p>Welcome, {{ user.id }}. <a href="/api/auth/logout">log-out</a></p>
+      <p>Welcome, {{ user.displayName }}. <a href="/api/auth/logout">log-out</a></p>
     {% else %}
       <p>Welcome, stranger. Please <a href="/api/auth/login">log-in</a><br></p>
     {% endif %}
