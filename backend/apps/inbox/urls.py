@@ -18,5 +18,7 @@ from apps.inbox.views import inbox
 
 
 urlpatterns = [
-    path('<str:author_id>/inbox', inbox, name="Inbox")
+    path('<str:author_id>/inbox', inbox, name="Inbox"),
+    path('<str:author_id>/posts/', include('apps.posts.urls')),
+
 ]
