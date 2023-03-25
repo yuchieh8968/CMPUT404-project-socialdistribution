@@ -1,0 +1,7 @@
+heroku pg:reset --> resets heroku db (DANGER)
+
+
+git push heroku deploy:main --> deploy app
+
+heroku run --app social-distro python manage.py migrate --> heroku migration (run makemigrations first, but LOCALLY)
+heroku run --app social-distro python manage.py createsuperuser --> make superuser on deployment

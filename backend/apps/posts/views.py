@@ -6,121 +6,290 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.views import APIView
-from .models import Post, Comment
+from .models import Post
+from apps.authors.models import Author
 from django.http import Http404
 from .serializers import PostSerializer
 from rest_framework import status
-from rest_framework.exceptions import NotAuthenticated
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import GenericAPIView, ListCreateAPIView, ListAPIView
+from rest_framework.mixins import CreateModelMixin, ListModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin
+from urllib.parse import unquote, quote
+from datetime import datetime
+import uuid
+# from rest_framework.decorators import authentication_classes, permission_classes
+# from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from apps.authors.remoteauth import RemoteAuth
+from django.shortcuts import render
+from django.template import loader
+import requests
+import json
+
 
 
 # Create your views here.
 
+# def GuiPost(request, author_text, post_text):
+def GuiPost(request):
+    
 
-@api_view(['GET'])
-def posts_paginated(request: Request, author_id: str, page: int = 10, size: int = 5):
-    """
-    /authors/{AUTHOR_ID}/posts?page=10&size=5
+    r = requests.get('https://sd7-api.herokuapp.com/api/authors/d3bb924f-f37b-4d14-8d8e-f38b09703bab/posts/9095cfd8-8f6a-44aa-b75b-7d2abfb5f694/', auth=('node01', 'P*ssw0rd!'))
+    # print(r.text)
+    
+    post = r.json()
+    # post = json.loads(r.json)
 
-    GET (local, remote) get the recent posts from author AUTHOR_ID (paginated)
-    """
-    page = request.GET.get('page', '')
-    size = request.GET.get('size', '')
+    # build the post ID and the author ID for the api call
+    # post_id = 
 
-    if page == '':
-        page = 10
-    if size == '':
-        size = 5
-
-    try:
-        page = int(page)
-        assert page > 0
-    except Exception as e:
-        page = 10
-
-    try:
-        size = int(size)
-        assert size > 0
-    except Exception as e:
-        size = 5
-
-    return Response({"message": f"Viewing {page} pages with {size} posts per page for author {author_id}"})
+    # get the post
+    # post = Post.objects.get(id=post_id)
+    context = {'post': post}
+    return render(request, 'view-post.html', context)
 
 
-# @api_view(['GET', 'POST'])
-# def all_posts(request: Request, author_id: str):
-#     """
-#     /authors/{author_id}/posts/
 
-#     GET (local, remote) Used to view all posts from a particular author
+class Post_Individual(GenericAPIView):
+    serializer_class = PostSerializer
+    # lookup_field = 'id'
+    # lookup_url_kwarg = 'post_id'
+    authentication_classes = []
 
-#     POST (local) create a new post but generate a new id
-#     """
-
-#     if request.method == 'GET':
-#         return Response({"message": f"Viewing all posts for author {author_id}"})
-
-#     elif request.method == 'POST':
-#         return Response({"message": f"Creating a new post for author {author_id}"})
-
-
-class All_Posts_By_Author(APIView):
-
-    def get_object(self, id, format=None):
+    def get(self, request, author_id, post_id, format=None):
         """
-        Gets a query from the database.
-        """
-        query_set = Post.objects.filter(author_id__pk=id)
-        if query_set:
-            return query_set
-        raise Http404
-
-    def get(self, request, author_id, format=None):
-        """
-        /authors/{author_id}/posts/
+        /authors/{author_id}/posts/{post_id}
         
-        GET (local, remote) Used to view all posts from a particular author
+        GET (local, remote): get the public post whose id is POST_ID
         """
-        query = self.get_object(author_id)
-        serializer = PostSerializer(query, many=True)
+        # print(f"looking for post with id={post_id}")
+        # print(f"looking for post with authorid={author_id}")
+
+        is_remote = RemoteAuth(request=request)
+        if not is_remote:
+            response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
+            response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
+            return response
+
+        # try:
+        #     post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        # except Http404:
+        #     if str(post_id).endswith('/'):
+        #         post_id = post_id[:-1]
+        #         post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        #     else:
+        #         raise Http404
+        post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        serializer = PostSerializer(post)
         return Response(serializer.data)
 
-    def post(self, request, author_id, format=None):
+    def post(self, request, author_id, post_id, format=None):
         """
-        /authors/{author_id}/posts/
-
-        POST (local) create a new post but generate a new id
-
-        You have to put the post_id in the json.
+        /authors/{author_id}/posts/{post_id}
+        
+        POST (local): update the post whose id is POST_ID (must be authenticated)
         """
-        serializer = PostSerializer(data=request.data)
+        # try:
+        #     post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        # except Http404:
+        #     if str(post_id).endswith('/'):
+        #         post_id = post_id[:-1]
+        #         post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+        #     else:
+        #         raise Http404
+        post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+
+        # do we have permission to edit this post?
+
+        # are we authenticated?
+        if not request.user.is_active:
+            raise NotAuthenticated
+
+        # are we admin or the author of this post
+        auth = False
+        if request.user.is_staff:
+            auth = True
+        elif str(request.user) == post.author_id:
+            auth = True
+
+        if not auth:
+            raise PermissionDenied
+
+
+        serializer = PostSerializer(post, data=request.data)
+
         if serializer.is_valid():
+            if serializer.validated_data['id'] != post.id:
+                return Response("Changing post_id not allowed", status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.data)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
+    def delete(self, request, author_id, post_id, format=None):
+        """
+        /authors/{author_id}/posts/{post_id}
+        
+        DELETE (local): remove the post whose id is POST_ID
+        """
+        post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
+
+        # do we have permission to edit this post?
+
+        if not request.user.is_active:
+            raise NotAuthenticated
+
+        auth = False
+        if request.user.is_staff:
+            auth = True
+        elif str(request.user) == post.author_id:
+            auth = True
+
+        if not auth:
+            raise PermissionDenied
+        
+        post.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    
+    def put(self, request, author_id, post_id, format=None):
+        """
+        /authors/{author_id}/posts/{post_id}
+        
+        PUT (local): create a post where its id is POST_ID
+        """
 
 
-@api_view(['GET', 'POST', 'DELETE', 'PUT'])
-def single_post(request: Request, author_id: str, post_id: str):
-    """
-    /authors/{author_id}/posts/{post_id}
+        serializer = PostSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-    GET (local, remote) get the public post whose id is POST_ID
 
-    POST (local) update the post whose id is POST_ID (must be authenticated)
+        # do we have permission to create this post?
 
-    DELETE (local) remove the post whose id is POST_ID
+        if not request.user.is_active:
+            raise NotAuthenticated
 
-    PUT (local) create a post where its id is POST_ID
-    """
+        auth = False
+        if request.user.is_staff:
+            auth = True
+        elif str(request.user) == serializer.validated_data['author_id'] == author_id:
+            auth = True
 
-    if request.method == 'GET':
-        return Response({"message": f"Viewing single post {post_id} from author {author_id}"})
-    elif request.method == 'POST':
-        return Response({"message": f"Updating single post {post_id} from author {author_id}"})
-    elif request.method == 'DELETE':
-        return Response({"message": f"Removing single post {post_id} from author {author_id}"})
-    elif request.method == 'PUT':
-        return Response({"message": f"Creating single post {post_id} from author {author_id}"})
+        if not auth:
+            raise PermissionDenied
+        
+        # is the post id the same as our post_id
+        if serializer.validated_data['id'] != post_id:
+            return Response("Post's 'id' field doesn't match url post_id", status=status.HTTP_400_BAD_REQUEST)
+
+
+        serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+
+    def get_success_headers(self, data):
+        try:
+            return {'Location': str(data['id'])}
+        except (TypeError, KeyError):
+            return {}
+
+
+
+
+
+
+
+
+
+
+# class ImagePost(APIView):
+    
+#     def get(self, request, author_id, post_id, format=None):
+#         """
+#         /authors/{author_id}/posts/{post_id}/image
+
+#         GET (local, remote) get the public post converted to binary as an image
+#         """
+#         # return 404 if not an image
+#         return Response({"message": f"Viewing image post with post_id {post_id} and author_id {author_id}"})
+
+
+
+
+
+class All_Posts_By_Author(ListAPIView):
+    serializer_class = PostSerializer
+    # lookup_field = 'author_id'
+    # lookup_url_kwarg = 'author_id'
+    authentication_classes = []
+
+    def get_queryset(self):
+        return Post.objects.all()
+    
+    def get(self, request, author_id):
+        
+        is_remote = RemoteAuth(request=request)
+        if not is_remote:
+            response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
+            response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
+            return response
+
+        return super().get(request, author_id=author_id)
+
+
+    def generate_unique_id(self, author_id):
+        # time = quote(datetime.now(), safe='')
+        time = str(uuid.uuid1())
+        res = f"http://127.0.0.1:8000/authors/{author_id}/posts/{time}"
+        return res
+
+    # def post(self, request, author_id, format=None):
+    #     """
+    #     /authors/{author_id}/posts/
+
+    #     POST (local) create a new post but generate a new id
+    #     """
+
+    #     request.data
+
+    #     serializer = PostSerializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+
+    #     # do we have permission to create this post?
+
+    #     if not request.user.is_active:
+    #         raise NotAuthenticated
+
+    #     auth = False
+    #     if request.user.is_staff:
+    #         auth = True
+    #     elif str(request.user) == serializer.validated_data['author_id'] == author_id:
+    #         auth = True
+
+    #     if not auth:
+    #         raise PermissionDenied
+        
+    #     # is the post id the same as our post_id
+    #     if serializer.validated_data['id'] != post_id:
+    #         return Response("Post's 'id' field doesn't match url post_id", status=status.HTTP_400_BAD_REQUEST)
+
+
+    #     serializer.save()
+    #     headers = self.get_success_headers(serializer.data)
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+
+
+    def get_success_headers(self, data):
+        try:
+            return {'Location': str(data['id'])}
+        except (TypeError, KeyError):
+            return {}
+
+
 
 
 # These are extra, for testing purposes only. --------------------------------
@@ -146,140 +315,4 @@ class Post_All(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class Author_Post_Single(APIView):
-
-    def get_object(self, author_id, post_id, format=None):
-        """
-        Gets a query from the database.
-        """
-        try:
-            query_set = Post.objects.get(id=post_id, author_id=author_id)
-            return query_set
-        except:
-            Post.DoesNotExist
-
-            raise Http404
-
-    def get(self, request, author_id, post_id, format=None):
-        """
-        /authors/{author_id}/posts/{post_id}
-
-        GET (local, remote) get the public post whose id is POST_ID
-        """
-        query_set = self.get_object(author_id, post_id)
-        serializer = PostSerializer(query_set)
-        return Response(serializer.data)
-
-    """
-    ALERT
-    For making a post, you have to pass all the ids in the json
-    """
-
-    def post(self, request, author_id, post_id, format=None):
-        """
-        POST (local) update the post whose id is POST_ID (must be authenticated).
-        """
-        # Use these to check if we are authenticated
-        # better yet is to use permissions to control individual users access https://www.django-rest-framework.org/api-guide/permissions/
-        # this is only a basic check to see if we are logged in to a user (doesn't need to be author_id)
-        user = str(request.user)
-        auth = str(request.auth)
-        if user == "AnonymousUser" and auth == "None":
-            # return redirect(f'/api-auth/login/?next=/authors/{author_id}/posts/{post_id}') # redirect to login page, set the next page after successful login.
-            raise NotAuthenticated # or can just send a 403 or 401 https://www.django-rest-framework.org/api-guide/exceptions/#notauthenticated
-        return Response({"message": f"Updating single post {post_id} from author {author_id}. Note that user = {user} and auth = {auth}"})
-
-    def put(self, request, author_id, post_id, format=None):
-        """
-        /authors/{author_id}/posts/{post_id}
-
-        PUT (local) create a post where its id is POST_ID
-        """
-        query_set = self.get_object(author_id, post_id)
-        serializer = PostSerializer(query_set, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, author_id, post_id, format=None):
-        """
-        /authors/{author_id}/posts/{post_id}
-
-        DELETE (local) remove the post whose id is POST_ID
-        """
-        query_set = self.get_object(author_id, post_id)
-        query_set.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-
-
-# class Post_individual(APIView):
-#     def get_object(self, post_id):
-#         try:
-#             return Post.objects.get(pk=post_id)
-#         except:
-#             Post.DoesNotExist
-#             raise Http404
-
-#     def get(self, request, post_id, format=None):
-#         """
-#         /authors/{author_id}/posts/{post_id}
-
-#         GET (local, remote) get the public post whose id is POST_ID
-#         """
-#         post_query_set = self.get_object(post_id)
-#         serializer = PostSerializer(post_query_set)
-#         return Response(serializer.data)
-
-#     def put(self, request, post_id, format=None):
-#         """
-#         /authors/{author_id}/posts/{post_id}
-
-#         PUT (local) create a post where its id is POST_ID
-#         """
-#         post_query_set = self.get_object(post_id)
-#         serializer = PostSerializer(post_query_set, data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-#     def delete(self, request, post_id, format=None):
-#         """
-#         /authors/{author_id}/posts/{post_id}
-
-#         DELETE (local) remove the post whose id is POST_ID
-#         """
-#         post_query_set = self.get_object(post_id)
-#         post_query_set.delete()
-#         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-
-
-# class Post_All(APIView):
-
-#     """
-#     GET all the post from the database. 
-#     """
-
-#     def get(self, request, format=None):
-#         posts_query_set = Post.objects.all()
-#         serializer = PostSerializer(posts_query_set, many=True)
-#         return Response(serializer.data)
-
-#     """
-#     POST a new post.
-#     """
-
-#     def post(self, request, format=None):
-#         serializer = PostSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
