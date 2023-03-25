@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import Badge from '@mui/material/Badge';
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ImageUploader from "../image/ImageUpload";
 import Button from "@mui/material/Button";
 import PublishIcon from '@mui/icons-material/Publish';
 import CancelIcon from '@mui/icons-material/Cancel';
-import { Dialog } from "@mui/material";
+import CreateIcon from '@mui/icons-material/Create';
+import { Dialog, Icon, IconButton } from "@mui/material";
 
 export default function CreatePost() {
     const [titleInput, setTitleInput] = useState('');
@@ -50,72 +52,73 @@ export default function CreatePost() {
         setOpen(false);
     };
 
-    const submitButton = {
-        backgroundColor: "#2b2b2b",
-        color: "white"
-    };
 
     return (
         <>
-            <Button variant="outlined" onClick={handleClickOpen} style={submitButton} >
-                CREATE A POST
-            </Button>
-            <Dialog
-            open={open}
-            onClose={handleClose}
-            fullWidth={true}
-            maxWidth={'md'}
-            >
-                <Container maxWidth="md">
-                    <Typography variant="h5" aria-label="Create A Post">
-                        Create A Post
-                    </Typography>
-                    <form>
-                        <TextField
-                            fullWidth
-                            id="title"
-                            label="Post Title"
-                            variant="outlined"
-                            margin="normal"
-                            aria-label="Title of Post"
-                            value= {titleInput}
-                            onChange= {handleTitleInput}
-                        />
-                        <TextField
-                            fullWidth
-                            multiline
-                            rows={8}
-                            id="description"
-                            label="Description"
-                            variant="outlined"
-                            margin="normal"
-                            aria-label="Body of Post"
-                            value= {bodyInput}
-                            onChange= {handleBodyInput}
+            <IconButton size="large" color="inherit">
+                    <Badge>
+                        <CreateIcon onClick={handleClickOpen} />
+                    </Badge>
+                </IconButton>
 
-                        />
-                        <ToggleButtonGroup
-                            color="primary"
-                            value={visibility}
-                            exclusive
-                            onChange={handleChange}
-                            aria-label="Post's Visibility Choices"
-                        >
-                            <ToggleButton value="PUBLIC">Public </ToggleButton>
-                            <ToggleButton value="PRIVATE">Private</ToggleButton>
-                        </ToggleButtonGroup>
-                    </form>
+            <Box sx={{ flexGrow: 1 }}>
+                <Dialog
+                open={open}
+                onClose={handleClose}
+                fullWidth={true}
+                maxWidth={'md'}
+                >
+                    <Container maxWidth="md">
+                        <Typography variant="h5" aria-label="Create A Post">
+                            Create A Post
+                        </Typography>
+                        <form>
+                            <TextField
+                                fullWidth
+                                id="title"
+                                label="Post Title"
+                                variant="outlined"
+                                margin="normal"
+                                aria-label="Title of Post"
+                                value= {titleInput}
+                                onChange= {handleTitleInput}
+                            />
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={8}
+                                id="description"
+                                label="Description"
+                                variant="outlined"
+                                margin="normal"
+                                aria-label="Body of Post"
+                                value= {bodyInput}
+                                onChange= {handleBodyInput}
 
-                    <ImageUploader />
+                            />
+                            <ToggleButtonGroup
+                                color="primary"
+                                value={visibility}
+                                exclusive
+                                onChange={handleChange}
+                                aria-label="Post's Visibility Choices"
+                            >
+                                <ToggleButton value="PUBLIC">Public </ToggleButton>
+                                <ToggleButton value="PRIVATE">Private</ToggleButton>
+                            </ToggleButtonGroup>
+                        </form>
 
-                    <Button onClick={handleSubmit} variant="contained" endIcon={<PublishIcon />}>
-                            Publish
-                    </Button>
-                    <Button onClick={handleClose} variant="contained" endIcon={<CancelIcon />}>
-                            Cancel
-                    </Button>
-                </Container>
-            </Dialog>
+                        <ImageUploader />
+
+                        <Button onClick={handleSubmit} variant="contained" endIcon={<PublishIcon />}>
+                                Publish
+                        </Button>
+                        <Button onClick={handleClose} variant="contained" endIcon={<CancelIcon />}>
+                                Cancel
+                        </Button>
+                    </Container>
+                </Dialog>
+            </Box>
         </>
     );
 }
