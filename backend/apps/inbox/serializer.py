@@ -5,4 +5,4 @@ from .models import Inbox
 class InboxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inbox
-        fields = ('id','source','origin', 'contentType','author_id')
+        fields = ('sender', 'url','contentType','author_id', 'summary')

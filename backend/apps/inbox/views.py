@@ -21,4 +21,4 @@ class InboxListCreateView(ListCreateAPIView):
     serializer_class = InboxSerializer
     def get_queryset(self):
         authorID= self.kwargs.get("author_id","")
-        return self.queryset.filter(author_id = authorID)
+        return self.queryset.filter(author_id = authorID).order_by("-created_at")

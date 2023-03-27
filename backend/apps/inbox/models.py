@@ -2,16 +2,18 @@ from django.db import models
 
 from apps.authors.models import Author
 from django.urls import reverse
+import datetime
 # Create your models here.
 
 
 class Inbox(models.Model):
+    sender = models.URLField(max_length=512, blank=False, null=False)
     id = models.BigAutoField(primary_key=True)
-    url = models.URLField(max_length=200, blank=True)
-    source = models.CharField(max_length=50, blank=True)
-    origin = models.CharField(max_length=50, blank=True)
+    url = models.URLField(max_length=512, blank=False, null=False) #object url
     contentType = models.CharField(max_length=20, blank=True)
     author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
+    summary = models.CharField(max_length=512, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     
 ## should only have links to the post that includes author url
 
