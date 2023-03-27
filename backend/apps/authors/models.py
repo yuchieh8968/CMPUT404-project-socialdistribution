@@ -3,34 +3,27 @@ from django.urls import reverse
 from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
 from urllib.parse import quote
+import uuid
 # Create your models here.
 
-class AllowedRemotes(models.Model):
-    username = models.CharField(primary_key=True, max_length=10, unique=True)
-    password = models.CharField(max_length=10, blank=False, null= False)
+# class AllowedRemotes(models.Model):
+#     username = models.CharField(primary_key=True, max_length=10, unique=True)
+#     password = models.CharField(max_length=10, blank=False, null= False)
 
 # https://docs.djangoproject.com/en/4.1/topics/auth/customizing/#custom-users-admin-full-example
 class MyUserManager(BaseUserManager):
-    def create_user(self, id, url, host, displayName, password=None):
+    def create_user(self, username, displayName, password=None):
         """
         Creates and saves an Author with an id, url, host, displayName, and password
         """
-        if not id:
-            raise ValueError('Users must have an id')
-        
-        if not url:
-            raise ValueError('Users must have a url')
-        
-        if not host:
-            raise ValueError('Users must have a host')
+        if not username:
+            raise ValueError('Users must have a username')
         
         if not displayName:
             raise ValueError('Users must have a displayName')
 
         user = self.model(
-            id = id,
-            url=url,
-            host=host,
+            username = username,
             displayName=displayName,
         )
 
@@ -38,27 +31,26 @@ class MyUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, id, url, host, displayName, password=None):
+    def create_superuser(self, username, displayName, password=None):
         """
         Creates and saves a superuser with the given id, url, host, displayName, and password
         """
         user = self.create_user(
-            id=id,
-            url=url,
-            host=host,
+            username=username,
             displayName=displayName,
             password=password,
         )
+
+        
         user.is_admin = True
         user.save(using=self._db)
         return user
 
 
 class Author(AbstractBaseUser):
-    id = models.URLField(primary_key=True, max_length=255, unique=True)
-    url = models.URLField(max_length=255, blank=True, unique=True)
-    host = models.URLField(max_length=200, blank=True)
-    displayName = models.CharField(max_length=200, blank=False, null=False, unique=True, editable=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    username = models.CharField(max_length=20, blank=False, null=False, unique=True)
+    displayName = models.CharField(max_length=20, blank=False, null=False)
     github = models.URLField(max_length=255, blank=True, null=True)
     profileImage = models.URLField(blank=True, null=True)
 
@@ -66,15 +58,15 @@ class Author(AbstractBaseUser):
     is_admin = models.BooleanField(default=False)
 
     objects = MyUserManager()
-    USERNAME_FIELD = 'id'
-    REQUIRED_FIELDS = ['url', 'host', 'displayName']
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = ['displayName']
 
     # def friendlist_template():
     #     return {"friend_id": "[]"}
     # friend_list = models.JSONField(blank=True, default=friendlist_template)
 
     def __str__(self):
-        return self.id
+        return str(self.id)
     
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"

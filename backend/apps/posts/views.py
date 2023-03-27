@@ -20,11 +20,13 @@ from datetime import datetime
 import uuid
 # from rest_framework.decorators import authentication_classes, permission_classes
 # from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from apps.authors.remoteauth import RemoteAuth
+# from apps.authors.remoteauth import RemoteAuth
 from django.shortcuts import render
 from django.template import loader
 import requests
 import json
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -54,7 +56,8 @@ class Post_Individual(GenericAPIView):
     serializer_class = PostSerializer
     # lookup_field = 'id'
     # lookup_url_kwarg = 'post_id'
-    authentication_classes = []
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, author_id, post_id, format=None):
         """
@@ -65,11 +68,11 @@ class Post_Individual(GenericAPIView):
         # print(f"looking for post with id={post_id}")
         # print(f"looking for post with authorid={author_id}")
 
-        is_remote = RemoteAuth(request=request)
-        if not is_remote:
-            response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
-            response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
-            return response
+        # is_remote = RemoteAuth(request=request)
+        # if not is_remote:
+        #     response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
+        #     response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
+        #     return response
 
         # try:
         #     post = get_object_or_404(Post.objects.all(), id=post_id, author_id=author_id)
@@ -224,18 +227,19 @@ class All_Posts_By_Author(ListAPIView):
     serializer_class = PostSerializer
     # lookup_field = 'author_id'
     # lookup_url_kwarg = 'author_id'
-    authentication_classes = []
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Post.objects.all()
     
     def get(self, request, author_id):
         
-        is_remote = RemoteAuth(request=request)
-        if not is_remote:
-            response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
-            response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
-            return response
+        # is_remote = RemoteAuth(request=request)
+        # if not is_remote:
+        #     response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
+        #     response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
+        #     return response
 
         return super().get(request, author_id=author_id)
 

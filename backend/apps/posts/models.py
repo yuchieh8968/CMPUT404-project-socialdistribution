@@ -4,13 +4,14 @@ from django.urls import reverse
 from apps.authors.models import Author
 from django.contrib.postgres.fields import ArrayField
 from urllib.parse import quote
+import uuid
 # Create your models here.
 
 
 class Post(models.Model):
 
     # Fields
-    id = models.URLField(primary_key=True, max_length=255, unique=True)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     title = models.CharField(max_length=256, blank=False, null=False)
     source = models.CharField(max_length=256, blank=True, null=True)
     origin = models.CharField(max_length=256, blank=True, null=True)
@@ -28,7 +29,7 @@ class Post(models.Model):
     
     content = models.CharField(max_length=1000, blank=False, null=False)
     
-    author_id = models.ForeignKey(Author, on_delete=models.CASCADE)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
     categories = ArrayField(models.CharField(max_length=20, blank=True), blank=True)
 

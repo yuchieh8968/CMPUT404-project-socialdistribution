@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Author, AllowedRemotes
+from .models import Author
 
 from django import forms
 from django.contrib.auth.models import Group
@@ -14,13 +14,12 @@ class CustomUserCreationForm(forms.ModelForm):
     password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
     password2 = forms.CharField(label='Password confirmation', widget=forms.PasswordInput)
 
-    url = forms.URLField(label='URL', widget=forms.URLInput, required=True)
-    host = forms.URLField(label='Host', widget=forms.URLInput, required=True)
+    username = forms.CharField(label='Username', widget=forms.TextInput, required=True)
     displayName = forms.CharField(label='DisplayName', widget=forms.TextInput, required=True)
 
     class Meta:
         model = Author
-        fields = ('id', 'url', 'host', 'displayName')
+        fields = ('id', 'username', 'displayName')
 
     def clean_password2(self):
         # Check that the two password entries match
@@ -45,14 +44,13 @@ class CustomUserChangeForm(UserChangeForm):
     disabled password hash display field.
     """
 
-    url = forms.URLField(label='URL', widget=forms.URLInput, required=True)
-    host = forms.URLField(label='Host', widget=forms.URLInput, required=True)
+    username = forms.CharField(label='Username', widget=forms.TextInput, disabled=True)
     displayName = forms.CharField(label='DisplayName', widget=forms.TextInput, required=True)
 
 
     class Meta:
         model = Author
-        fields = ('id', 'url', 'host', 'displayName', 'github', 'profileImage', 'is_admin')
+        fields = ('displayName', 'github', 'profileImage', 'is_admin')
         # fields = ('__all__')
 
 
@@ -64,25 +62,25 @@ class UserAdmin(BaseUserAdmin):
     # The fields to be used in displaying the User model.
     # These override the definitions on the base UserAdmin
     # that reference specific fields on auth.User.
-    list_display = ('id', 'url', 'host', 'displayName', 'is_admin')
+    list_display = ('id', 'username', 'displayName', 'is_admin')
     list_filter = ('is_admin',)
     fieldsets = (
-        (None, {'fields': ('id', 'password')}),
-        ('Personal info', {'fields': ('url', 'host', 'displayName', 'github', 'profileImage')}),
+        (None, {'fields': ('username', 'password')}),
+        ('Personal info', {'fields': ('displayName', 'github', 'profileImage')}),
         ('Permissions', {'fields': ('is_admin',)}),
     )
     # add_fieldsets is not a standard ModelAdmin attribute. UserAdmin
     # overrides get_fieldsets to use this attribute when creating a user.
     add_fieldsets = (
-        (None, {'fields': ('id', 'password1', 'password2')}),
-        ('Personal info', {'fields': ('url', 'host', 'displayName', 'github', 'profileImage')}),
+        (None, {'fields': ('username', 'password1', 'password2')}),
+        ('Personal info', {'fields': ('displayName', 'github', 'profileImage')}),
         ('Permissions', {'fields': ('is_admin',)}),
     )
-    search_fields = ('id',)
-    ordering = ('id',)
+    search_fields = ('username',)
+    ordering = ('username',)
     filter_horizontal = ()
 
 
 # Register your models here.
 admin.site.register(Author, UserAdmin)
-admin.site.register(AllowedRemotes)
+# admin.site.register(AllowedRemotes)
