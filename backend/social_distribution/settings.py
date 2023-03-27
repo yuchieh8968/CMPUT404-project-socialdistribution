@@ -29,6 +29,13 @@ ALLOWED_HOSTS = []
 
 APPEND_SLASH = False
 
+APPEND_SLASH = False
+
+# ALLOW REACT
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
 
 # Application definition
 
@@ -48,6 +55,8 @@ INSTALLED_APPS = [
     'apps.inbox',
     'apps.likes',
     'apps.posts',
+    'apps.authors',
+    'corsheaders',
 ]
 
 REST_FRAMEWORK = {
@@ -58,6 +67,7 @@ LOGIN_REDIRECT_URL = "/api/docs/"
 LOGOUT_REDIRECT_URL = "/api/docs/"
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
