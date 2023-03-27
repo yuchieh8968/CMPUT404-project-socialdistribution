@@ -1,11 +1,11 @@
-from django.db import models
+# from django.db import models
 
-from apps.authors.models import Author
-# Create your models here.
+# from apps.authors.models import Author
+# # Create your models here.
 
 
 
-# https://stackoverflow.com/questions/58794639/how-to-make-follower-following-system-with-django-model
+# # https://stackoverflow.com/questions/58794639/how-to-make-follower-following-system-with-django-model
 # class Author_Follows(models.Model):
 #     """
 #     Each individual record is a someone following someone. So, all the following/Friend

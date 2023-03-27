@@ -21,27 +21,27 @@ from apps.authors.views import Author_All, Author_Individual
 from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost
 from django.views.generic.base import RedirectView
 
-class AuthorIDConverter:
-      regex = r".+?(?=\/posts)"
+# class AuthorIDConverter:
+#       regex = r".+?(?=\/posts)"
 
-      def to_python(self, value: str) -> str:
-          return value
+#       def to_python(self, value: str) -> str:
+#           return value
 
-      def to_url(self, value: str) -> str:
-          return value
+#       def to_url(self, value: str) -> str:
+#           return value
 
-register_converter(AuthorIDConverter, "author_id_path")
+# register_converter(AuthorIDConverter, "author_id_path")
 
 
 
 urlpatterns = [
 
     # posts
-    path('api/authors/<author_id_path:author_id>/posts/<path:post_id>', Post_Individual.as_view(), name="Specific post"),                                     # Specific post
-    path('api/authors/<path:author_id>/posts/', All_Posts_By_Author.as_view(), name="Recent posts by author"),                                         # Recent posts from author, or create new one with new id
+    path('api/authors/<str:author_id>/posts/<str:post_id>', Post_Individual.as_view(), name="Specific post"),                                     # Specific post
+    path('api/authors/<str:author_id>/posts/', All_Posts_By_Author.as_view(), name="Recent posts by author"),                                         # Recent posts from author, or create new one with new id
 
     # authors
-    path('api/authors/<path:author_id>/', Author_Individual.as_view(), name="Single author"),                                # Single author
+    path('api/authors/<str:author_id>/', Author_Individual.as_view(), name="Single author"),                                # Single author
     path('api/authors/', Author_All.as_view(), name="All authors"),                                                         # All authors
 
     # redirect home to api/docs/
