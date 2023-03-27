@@ -20,6 +20,7 @@ from rest_framework.schemas import get_schema_view
 from apps.authors.views import Author_All, Author_Individual
 from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost
 from django.views.generic.base import RedirectView
+from apps.inbox.views import InboxListCreateView
 
 class AuthorIDConverter:
       regex = r".+?(?=\/posts)"
@@ -77,5 +78,5 @@ urlpatterns = [
     # path('api/authors/<path:author_id>/liked', XXX, name="Author likes"),                                                    # See what author_id has liked
 
     # # inbox
-    # path('api/authors/<path:author_id>/inbox', XXX, name="Inbox"),                                                           # Inbox = new posts from who you follow
+    path('api/authors/<path:author_id>/inbox', InboxListCreateView.as_view(), name="Inbox"),                                                           # Inbox = new posts from who you follow
 ]
