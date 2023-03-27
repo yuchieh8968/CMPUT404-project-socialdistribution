@@ -29,8 +29,6 @@ ALLOWED_HOSTS = []
 
 APPEND_SLASH = False
 
-APPEND_SLASH = False
-
 # ALLOW REACT
 CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000',
