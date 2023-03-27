@@ -1,8 +1,12 @@
 from rest_framework import serializers
-from rest_framework.fields import URLField
+from rest_framework.fields import URLField, CharField
 from .models import Inbox
 
 class InboxSerializer(serializers.ModelSerializer):
+    object = URLField(source='url')
+    author = URLField(source = "sender")
+    type = CharField(source = "contentType")
+
     class Meta:
         model = Inbox
-        fields = ('id','source','origin', 'contentType','author_id')
+        fields = ('author', "object",'type', 'summary')

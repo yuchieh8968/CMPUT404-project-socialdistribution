@@ -5,6 +5,7 @@ from rest_framework.request import Request
 from rest_framework.generics import ListCreateAPIView
 from .models import Inbox
 from .serializer import InboxSerializer
+from apps.authors.models import Author
 
 # Create your views here.
 # def inbox(request: Request, author_id: str, post_url: str):
@@ -21,4 +22,10 @@ class InboxListCreateView(ListCreateAPIView):
     serializer_class = InboxSerializer
     def get_queryset(self):
         authorID= self.kwargs.get("author_id","")
-        return self.queryset.filter(author_id = authorID)
+        return self.queryset.filter(author_id = authorID).order_by("-created_at")
+    
+    def perform_create(self, serializer):
+        authorID= self.kwargs.get("author_id","")
+        authorInstance = Author.objects.get(id = authorID) #SQL select * from author where ID = author
+        return serializer.save(author_id = authorInstance)
+    
