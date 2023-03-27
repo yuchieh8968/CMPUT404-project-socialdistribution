@@ -1,0 +1,16 @@
+.row {
+    display: flex;
+    flex: 1;
+    min-height: 100vh;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.post {
+    flex-basis: 70%;
+    border-right: 1px solid #333333;
+}
+
+.comment {
+    flex-basis: 30%;
+}

@@ -61,17 +61,13 @@ export default function Home() {
         <div>
             <NavBar />
             <div class="row">
-                <div class="column front">
+                <div class="column left">
                     <h2>Show Friends or Categories.</h2>
                         <p> List of friends appear here</p>
                 </div>
-                <div class="column center">
-                    <h2>Posts Section</h2>
-                    <Post key={postObject.id} obj={postObject}/>
-                </div>
-                <div class="column">
-                    <h2>Comments Section</h2>
-                        <p> When you click on a post, comments appear here</p>
+
+                <div class="column right">
+                    <Post key={postObject.id} obj={postObject}/> {/*  https://react.dev/learn/passing-props-to-a-component */}
                 </div>
             </div>
         </div>
