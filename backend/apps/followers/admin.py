@@ -1,5 +1,5 @@
 from django.contrib import admin
-# from .models import Inbox
+# from .models import Friend
 
 # Register your models here.
-# admin.site.register(Inbox)
+# admin.site.register(Friend)
