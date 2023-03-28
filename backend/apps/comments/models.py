@@ -14,7 +14,7 @@ class Comment(models.Model):
     ]
 
 
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     author = models.ForeignKey(Author, on_delete=models.CASCADE, blank=False, null=False)
     post = models.ForeignKey(Post, on_delete=models.CASCADE, blank=False, null=False)
     comment = models.CharField(max_length=280, blank=False, null=False)
@@ -22,4 +22,4 @@ class Comment(models.Model):
     published = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        self.comment
+        return str(self.comment)
