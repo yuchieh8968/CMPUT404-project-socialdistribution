@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'apps.inbox',
     'apps.likes',
     'apps.posts',
-    'apps.authors',
     'corsheaders',
 ]
 
