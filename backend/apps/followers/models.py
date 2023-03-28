@@ -1,5 +1,5 @@
 from django.db import models
-
+import uuid
 from apps.authors.models import Author
 # Create your models here.
 
@@ -37,7 +37,10 @@ from apps.authors.models import Author
 
 
 """
-
+class Follow(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
+    actor = models.ForeignKey(Author, on_delete=models.CASCADE, null=False, blank=False)
+    object = models.URLField(null=False, blank=False)
 
 # class Follow(models.Model):
 #     pass
