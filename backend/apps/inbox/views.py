@@ -6,6 +6,8 @@ from rest_framework.generics import ListCreateAPIView
 from .models import Inbox
 from .serializer import InboxSerializer
 from apps.authors.models import Author
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 # def inbox(request: Request, author_id: str, post_url: str):
@@ -20,6 +22,8 @@ from apps.authors.models import Author
 class InboxListCreateView(ListCreateAPIView):
     queryset = Inbox.objects.all()
     serializer_class = InboxSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
     def get_queryset(self):
         authorID= self.kwargs.get("author_id","")
         return self.queryset.filter(author_id = authorID).order_by("-created_at")
