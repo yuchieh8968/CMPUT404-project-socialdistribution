@@ -7,8 +7,8 @@ class PostAdmin(admin.ModelAdmin):
     model = Post
     list_display = ['title', 'url', 'id', 'get_author']
 
-    def get_author(self, obj):
-        return obj.author_id
+    def get_author(self, post):
+        return post.author.id
     get_author.short_description = 'author_id'
 
     def url(self, post):

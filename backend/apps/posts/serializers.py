@@ -11,11 +11,11 @@ class PostSerializer(serializers.ModelSerializer):
 
     def build_author_id(self, post):
         host = settings.HOST
-        return f"{host}/api/authors/{post.author_id}"
+        return f"{host}/api/authors/{str(post.author)}"
 
     def build_id(self, post):
        host = settings.HOST
-       return f"{host}/api/authors/{post.author_id}/posts/{post.id}"
+       return f"{host}/api/authors/{str(post.author)}/posts/{str(post.id)}"
 
     class Meta:
         model = Post
