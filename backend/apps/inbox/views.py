@@ -49,6 +49,7 @@ def get_post_data(request):
 
     return JsonResponse(data)
 
+# gets current url. Will use this later to parse out author (current logged in user) url
 def my_view(request):
     current_url = request.build_absolute_uri()
     return HttpResponse(current_url)

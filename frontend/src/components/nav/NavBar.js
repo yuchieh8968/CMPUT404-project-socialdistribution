@@ -10,12 +10,13 @@ import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import Avatar from '@mui/material/Avatar';
 import MailIcon from '@mui/icons-material/Mail';
-import InboxIcon from '@mui/icons-material/Inbox';
 import LogoDevIcon from '@mui/icons-material/LogoDev';
-import CreateIcon from '@mui/icons-material/Create';
 import BottomNavigation from '@mui/material/BottomNavigation';
 import Paper from '@mui/material/Paper';
 import CreatePost from "../post/CreatePost";
+import InboxView from "../inbox/Inbox";
+
+
 
 export default function NavBar() {
 // Following this source code: https://github.com/mui/material-ui/blob/v5.11.14/docs/data/material/components/app-bar/PrimarySearchAppBar.js
@@ -109,11 +110,8 @@ export default function NavBar() {
                         <Box id="Spacer" sx={{ flexGrow: 1 }} />
 
                         <Box sx={{ display: { xs: 'none', md: 'flex' }}}>
-                            <IconButton size="large" aria-label="show new comments and likes" color="inherit">
-                                <Badge badgeContent={inboxNotification} color="error">
-                                    <InboxIcon />
-                                </Badge>
-                            </IconButton>
+                            {/* Inbox view here */}
+                            <InboxView/>
 
                             <IconButton size="large" aria-label="show new private post" color="inherit">
                                 <Badge badgeContent={postNotification} color="error">
