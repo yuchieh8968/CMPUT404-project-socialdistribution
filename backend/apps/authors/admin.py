@@ -19,7 +19,7 @@ class CustomUserCreationForm(forms.ModelForm):
 
     class Meta:
         model = Author
-        fields = ('id', 'username', 'displayName')
+        fields = ('username', 'displayName')
 
     def clean_password2(self):
         # Check that the two password entries match

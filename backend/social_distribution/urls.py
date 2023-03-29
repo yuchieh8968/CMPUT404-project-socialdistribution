@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path, register_converter
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
-from apps.authors.views import Author_All, Author_Individual
+from apps.authors.views import Author_All, Author_Individual, SignUp
 from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost
 from django.views.generic.base import RedirectView
 from apps.inbox.views import InboxListCreateView
@@ -36,6 +36,9 @@ from apps.inbox.views import InboxListCreateView
 
 
 urlpatterns = [
+
+    # sign-up
+    path('signup', SignUp.as_view(), name="sign-up"),
 
     # posts
     path('api/authors/<str:author_id>/posts/<str:post_id>', Post_Individual.as_view(), name="Specific post"),                                     # Specific post
