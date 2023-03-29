@@ -20,7 +20,7 @@ from .admin import CustomUserCreationForm
 #https://learndjango.com/tutorials/django-signup-tutorial
 class SignUp(generic.CreateView):
     form_class = CustomUserCreationForm
-    success_url = reverse_lazy("api/auth/login/")
+    success_url = "api/auth/login/"
     template_name = "signup.html"
 
 
@@ -95,8 +95,9 @@ class Author_Individual(GenericAPIView):
         serializer = self.serializer_class(author, data=request.data)
 
         if serializer.is_valid():
-            if serializer.validated_data['id'] != author.id:
-                return Response("Changing author_id not allowed", status=status.HTTP_400_BAD_REQUEST)
+            if 'id' in serializer.validated_data.keys():
+                if serializer.validated_data['id'] != author.id:
+                    return Response("Changing author_id not allowed", status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             return Response(serializer.data)
         

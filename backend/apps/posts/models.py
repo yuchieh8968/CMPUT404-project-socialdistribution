@@ -11,7 +11,7 @@ import uuid
 class Post(models.Model):
 
     # Fields
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    id = models.CharField(max_length=256, primary_key=True, default=str(uuid.uuid4()), editable=False)
     title = models.CharField(max_length=256, blank=False, null=False)
     source = models.CharField(max_length=256, blank=True, null=True)
     origin = models.CharField(max_length=256, blank=True, null=True)
