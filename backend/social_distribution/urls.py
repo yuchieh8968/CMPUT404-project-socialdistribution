@@ -21,6 +21,7 @@ from apps.authors.views import Author_All, Author_Individual, SignUp
 from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost
 from django.views.generic.base import RedirectView
 from apps.inbox.views import InboxListCreateView
+from apps.likes.views import Post_A_Like, Get_Like_For_Post
 
 # class AuthorIDConverter:
 #       regex = r".+?(?=\/posts)"
@@ -34,31 +35,38 @@ from apps.inbox.views import InboxListCreateView
 # register_converter(AuthorIDConverter, "author_id_path")
 
 
-
 urlpatterns = [
 
     # sign-up
     path('signup', SignUp.as_view(), name="sign-up"),
 
     # posts
-    path('api/authors/<str:author_id>/posts/<str:post_id>', Post_Individual.as_view(), name="Specific post"),                                     # Specific post
-    path('api/authors/<str:author_id>/posts/', All_Posts_By_Author.as_view(), name="Recent posts by author"),                                         # Recent posts from author, or create new one with new id
+    path('api/authors/<str:author_id>/posts/<str:post_id>', Post_Individual.as_view(),
+         name="Specific post"),                                     # Specific post
+    # Recent posts from author, or create new one with new id
+    path('api/authors/<str:author_id>/posts/',
+         All_Posts_By_Author.as_view(), name="Recent posts by author"),
 
     # authors
-    path('api/authors/<str:author_id>/', Author_Individual.as_view(), name="Single author"),                                # Single author
-    path('api/authors/', Author_All.as_view(), name="All authors"),                                                         # All authors
+    path('api/authors/<str:author_id>/', Author_Individual.as_view(),
+         name="Single author"),                                # Single author
+    # All authors
+    path('api/authors/', Author_All.as_view(), name="All authors"),
 
     # redirect home to api/docs/
     # https://stackoverflow.com/questions/14959217/django-url-redirect
     path('', RedirectView.as_view(url='api/docs/', permanent=False), name='index'),
 
     # admin, auth, api-schema, and api docs
-    path('admin/', admin.site.urls),                                # Django admin site
-    path('api/auth/', include('rest_framework.urls')),              # Prefix for API login and logout
-    path('api/schema/', get_schema_view(), name='API Schema'),      # API schema endpoint (used for dynamic swagger docs generation)
+    # Django admin site
+    path('admin/', admin.site.urls),
+    # Prefix for API login and logout
+    path('api/auth/', include('rest_framework.urls')),
+    # API schema endpoint (used for dynamic swagger docs generation)
+    path('api/schema/', get_schema_view(), name='API Schema'),
     path('api/docs/', TemplateView.as_view(
         template_name='swagger-ui.html',
-        extra_context={'schema_url':'API Schema'}
+        extra_context={'schema_url': 'API Schema'}
     ), name='swagger-ui'),                                          # Prefix for documentation pages (currently /docs/api/ only)
 
     # path('authors/<str:author_text>/posts/<str:post_text>', GuiPost, name="Gui Post"),
@@ -75,11 +83,15 @@ urlpatterns = [
     # path('api/authors/<path:author_id>/posts/<path:post_id>/comments', XXX, name="Comments on post"),                         # Comments on post
 
     # # likes
-    # path('api/authors/<path:author_id>/inbox/', XXX, name="Send like to author"),                                            # Send like to author
+    # Send like to author
+    path('api/authors/<path:author_id>/inbox/',
+         Post_A_Like.as_view(), name="Send like to author"),
     # path('api/authors/<path:author_id>/posts/<path:post_id>/likes', XXX, name="Likes on post"),                               # Get likes on post
     # path('api/authors/<path:author_id>/posts/<path:post_id>/comments/<path:comment_id>/likes', XXX, name="Likes on comment"),  # Get likes on comment
     # path('api/authors/<path:author_id>/liked', XXX, name="Author likes"),                                                    # See what author_id has liked
 
     # # inbox
-    path('api/authors/<path:author_id>/inbox', InboxListCreateView.as_view(), name="Inbox"),                                                           # Inbox = new posts from who you follow
+    # Inbox = new posts from who you follow
+    path('api/authors/<path:author_id>/inbox',
+         InboxListCreateView.as_view(), name="Inbox"),
 ]
