@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Post
+from django.conf import settings
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -9,12 +10,12 @@ class PostSerializer(serializers.ModelSerializer):
 
 
     def build_author_id(self, post):
-        host = "http://127.0.0.1:8000"
-        return f"{host}/api/authors/{post.author_id}"
+        host = settings.HOST
+        return f"{host}/api/authors/{str(post.author)}"
 
     def build_id(self, post):
-       host = "http://127.0.0.1:8000"
-       return f"{host}/api/authors/{post.author_id}/posts/{post.id}"
+       host = settings.HOST
+       return f"{host}/api/authors/{str(post.author)}/posts/{str(post.id)}"
 
     class Meta:
         model = Post

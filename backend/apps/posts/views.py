@@ -27,6 +27,8 @@ import requests
 import json
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.schemas.openapi import AutoSchema
+from django.conf import settings
 
 
 
@@ -122,8 +124,9 @@ class Post_Individual(GenericAPIView):
         serializer = PostSerializer(post, data=request.data)
 
         if serializer.is_valid():
-            if serializer.validated_data['id'] != post.id:
-                return Response("Changing post_id not allowed", status=status.HTTP_400_BAD_REQUEST)
+            if 'id' in serializer.validated_data.keys():
+                if serializer.validated_data['id'] != post.id:
+                    return Response("Changing post_id not allowed", status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             return Response(serializer.data)
         
@@ -163,9 +166,13 @@ class Post_Individual(GenericAPIView):
         PUT (local): create a post where its id is POST_ID
         """
 
-
+        request.data['id'] = post_id
+        request.data['author'] = author_id
         serializer = PostSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        serializer.validated_data['author'] = request.user
+        serializer.validated_data['id'] = post_id
+        # print(serializer.validated_data)
 
 
         # do we have permission to create this post?
@@ -176,27 +183,34 @@ class Post_Individual(GenericAPIView):
         auth = False
         if request.user.is_staff:
             auth = True
-        elif str(request.user) == serializer.validated_data['author_id'] == author_id:
+        elif str(request.user) == serializer.validated_data['author'] == author_id:
             auth = True
 
         if not auth:
             raise PermissionDenied
         
         # is the post id the same as our post_id
-        if serializer.validated_data['id'] != post_id:
+        if request.data['id'] != post_id:
             return Response("Post's 'id' field doesn't match url post_id", status=status.HTTP_400_BAD_REQUEST)
 
 
-        serializer.save()
-        headers = self.get_success_headers(serializer.data)
+
+        post = serializer.save()
+        newdict = serializer.data.copy()
+        newdict['author'] = author_id
+        newdict['post'] = post.id
+        headers = self.get_success_headers(newdict)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 
     def get_success_headers(self, data):
         try:
-            return {'Location': str(data['id'])}
-        except (TypeError, KeyError):
+            host = settings.HOST
+            stri = f"{host}/api/authors/{str(data['author'])}/posts/{str(data['post'])}"
+            return {'Location': stri}
+        except (TypeError, KeyError) as e:
+            # print(e)
             return {}
 
 
@@ -229,6 +243,7 @@ class All_Posts_By_Author(ListAPIView):
     # lookup_url_kwarg = 'author_id'
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
+    schema = AutoSchema(operation_id_base="CreatePost")
 
     def get_queryset(self):
         return Post.objects.all()
@@ -244,53 +259,51 @@ class All_Posts_By_Author(ListAPIView):
         return super().get(request, author_id=author_id)
 
 
-    def generate_unique_id(self, author_id):
-        # time = quote(datetime.now(), safe='')
-        time = str(uuid.uuid1())
-        res = f"http://127.0.0.1:8000/authors/{author_id}/posts/{time}"
-        return res
 
-    # def post(self, request, author_id, format=None):
-    #     """
-    #     /authors/{author_id}/posts/
+    def post(self, request, author_id, format=None):
+        """
+        /authors/{author_id}/posts/
 
-    #     POST (local) create a new post but generate a new id
-    #     """
+        POST (local) create a new post but generate a new id
+        """
 
-    #     request.data
+        request.data['author'] = author_id
+        serializer = PostSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.validated_data['author'] = request.user
+        # print(serializer.validated_data)
 
-    #     serializer = PostSerializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
+        # do we have permission to create this post?
 
-    #     # do we have permission to create this post?
+        if not request.user.is_active:
+            raise NotAuthenticated
 
-    #     if not request.user.is_active:
-    #         raise NotAuthenticated
+        auth = False
+        if request.user.is_staff:
+            auth = True
+        elif str(request.user) == serializer.validated_data['author'] == author_id:
+            auth = True
 
-    #     auth = False
-    #     if request.user.is_staff:
-    #         auth = True
-    #     elif str(request.user) == serializer.validated_data['author_id'] == author_id:
-    #         auth = True
-
-    #     if not auth:
-    #         raise PermissionDenied
+        if not auth:
+            raise PermissionDenied
         
-    #     # is the post id the same as our post_id
-    #     if serializer.validated_data['id'] != post_id:
-    #         return Response("Post's 'id' field doesn't match url post_id", status=status.HTTP_400_BAD_REQUEST)
 
-
-    #     serializer.save()
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        post = serializer.save()
+        newdict = serializer.data.copy()
+        newdict['author'] = author_id
+        newdict['post'] = post.id
+        headers = self.get_success_headers(newdict)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 
     def get_success_headers(self, data):
         try:
-            return {'Location': str(data['id'])}
-        except (TypeError, KeyError):
+            host = settings.HOST
+            stri = f"{host}/api/authors/{str(data['author'])}/posts/{str(data['post'])}"
+            return {'Location': stri}
+        except (TypeError, KeyError) as e:
+            # print(e)
             return {}
 
 

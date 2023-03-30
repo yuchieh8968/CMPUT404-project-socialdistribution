@@ -8,10 +8,22 @@ from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from django.urls import reverse_lazy
+from django.views import generic
+from .admin import CustomUserCreationForm
 # from apps.authors.remoteauth import RemoteAuth
 
 
 # Create your views here.
+
+
+#https://learndjango.com/tutorials/django-signup-tutorial
+class SignUp(generic.CreateView):
+    form_class = CustomUserCreationForm
+    success_url = "api/auth/login/"
+    template_name = "signup.html"
+
+
 
 class Author_All(ListAPIView):
     """
@@ -83,8 +95,9 @@ class Author_Individual(GenericAPIView):
         serializer = self.serializer_class(author, data=request.data)
 
         if serializer.is_valid():
-            if serializer.validated_data['id'] != author.id:
-                return Response("Changing author_id not allowed", status=status.HTTP_400_BAD_REQUEST)
+            if 'id' in serializer.validated_data.keys():
+                if serializer.validated_data['id'] != author.id:
+                    return Response("Changing author_id not allowed", status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             return Response(serializer.data)
         
