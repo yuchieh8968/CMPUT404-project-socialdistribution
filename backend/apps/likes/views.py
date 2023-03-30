@@ -45,6 +45,7 @@ class Post_A_Like(GenericAPIView):
         """
 
         serializer = LikeSerializer(Like, data=request.data)
+        print(request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -61,7 +62,7 @@ class Get_Like_For_Post(GenericAPIView):
         try:
             query_obj = Like.objects.filter(author__id=author_id)
             query_obj2 = query_obj.filter(
-                object__icontains=str(f'/posts/{post_id}'))
+                object__icontains=str(f'{post_id}'))
             return query_obj2
         except:
             raise Http404
@@ -72,5 +73,5 @@ class Get_Like_For_Post(GenericAPIView):
         GET [local, remote] a list of likes from other authors on AUTHOR_ID’s post POST_ID
         """
         obj = self.get_object(author_id, post_id)
-        serializer = LikeSerializer(obj)
+        serializer = LikeSerializer(obj, many=True)
         return Response(serializer.data)
