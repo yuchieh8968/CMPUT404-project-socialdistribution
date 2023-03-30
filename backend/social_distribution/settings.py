@@ -86,7 +86,7 @@ ROOT_URLCONF = 'social_distribution.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ REPO_DIR/'frontend/build'],
+        'DIRS': [ BASE_DIR/'/build'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -162,7 +162,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATIC_URL = 'static/'
 
 STATICFILES_DIRS = [
-            REPO_DIR / 'frontend/build/static'
+            BASE_DIR / 'build/static'
 ]
 
 # Default primary key field type
