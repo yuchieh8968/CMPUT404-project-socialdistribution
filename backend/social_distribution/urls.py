@@ -21,6 +21,7 @@ from apps.authors.views import Author_All, Author_Individual, SignUp
 from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost
 from django.views.generic.base import RedirectView
 from apps.inbox.views import InboxListCreateView
+from django.contrib.auth import views
 
 # class AuthorIDConverter:
 #       regex = r".+?(?=\/posts)"
@@ -52,9 +53,14 @@ urlpatterns = [
     # https://stackoverflow.com/questions/14959217/django-url-redirect
     path('', RedirectView.as_view(url='api/docs/', permanent=False), name='index'),
 
+    path('home',TemplateView.as_view(template_name='index.html')), # react app
+    path('profile',TemplateView.as_view(template_name='index.html')), # react app
+
     # admin, auth, api-schema, and api docs
     path('admin/', admin.site.urls),                                # Django admin site
-    path('api/auth/', include('rest_framework.urls')),              # Prefix for API login and logout
+    # path('api/auth/', include('rest_framework.urls')),              # Prefix for API login and logout
+    path('login', views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout', views.LogoutView.as_view(), name='logout'),
     path('api/schema/', get_schema_view(), name='API Schema'),      # API schema endpoint (used for dynamic swagger docs generation)
     path('api/docs/', TemplateView.as_view(
         template_name='swagger-ui.html',

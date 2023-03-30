@@ -20,7 +20,7 @@ from .admin import CustomUserCreationForm
 #https://learndjango.com/tutorials/django-signup-tutorial
 class SignUp(generic.CreateView):
     form_class = CustomUserCreationForm
-    success_url = "api/auth/login/"
+    success_url = "/login"
     template_name = "signup.html"
 
 
