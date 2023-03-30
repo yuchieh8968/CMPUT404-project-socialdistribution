@@ -86,7 +86,7 @@ ROOT_URLCONF = 'social_distribution.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR/'/build'],
+        'DIRS': [ BASE_DIR/'build'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -155,6 +155,7 @@ USE_I18N = True
 USE_TZ = True
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
