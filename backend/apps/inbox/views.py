@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.request import Request
 from rest_framework.generics import ListCreateAPIView
 from .models import Inbox
-from .serializer import InboxSerializer
+from .serializers import InboxSerializer
 from apps.authors.models import Author
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
