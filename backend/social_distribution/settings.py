@@ -14,8 +14,8 @@ from pathlib import Path
 
 
 # Change for deployment
-# HOST = "http://127.0.0.1:8000"
-HOST = "https://social-distro.herokuapp.com"
+HOST = "http://127.0.0.1:8000"
+# HOST = "https://social-distro.herokuapp.com"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
