@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-import InboxIcon from '@mui/icons-material/Inbox';
 import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { Button, Icon } from '@mui/material';
+import { Button, Icon, IconButton } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 
@@ -47,11 +46,12 @@ export default function InboxNotificationDropdown() {
   const anchorRef = useRef(null);
 
   return (
-      <>
-          <Badge badgeContent={data && data.results.length} color="secondary">
+      <IconButton>
+
+          <Badge badgeContent={data && data.results.length} color="error">
               <NotificationsIcon
                   aria-label="show new notifications"
-                  color="inherit"
+                  color="green"
                   onClick={handleClick}
                   size="large"
                   ref={anchorRef}
@@ -93,6 +93,6 @@ export default function InboxNotificationDropdown() {
                   </Link>
               ))}
           </Menu>
-      </>
+      </IconButton>
   );
 }
