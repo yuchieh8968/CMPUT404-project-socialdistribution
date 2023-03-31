@@ -9,9 +9,9 @@
   <body>
     <div>
     {% if user.is_active %}
-      <p>Welcome, {{ user.displayName }}. <a href="/api/auth/logout">log-out</a></p>
+      <p>Welcome, {{ user.displayName }}. <a href="/logout">log-out</a><br>Or <a href="/home">go home</a></p>
     {% else %}
-      <p>Welcome, stranger. Please <a href="/api/auth/login">log-in</a><br>Or <a href="/signup">sign-up</a></p>
+      <p>Welcome, stranger. Please <a href="/login">log-in</a><br>Or <a href="/signup">sign-up</a></p>
     {% endif %}
     {% if user.is_admin %}
       <p>Or, view admin page <a href='/admin'>here</a></p>
