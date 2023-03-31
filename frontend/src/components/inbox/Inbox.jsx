@@ -4,7 +4,7 @@ import Menu from '@mui/material/Menu';
 import InboxIcon from '@mui/icons-material/Inbox';
 import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import { Button } from '@mui/material';
+import { Button, Icon } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 
@@ -15,20 +15,14 @@ export default function InboxNotificationDropdown() {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(data);
 
-  const fetchData = async () => {
-      const response = await fetch('/api/authors/<str:author_id>/inbox');
-      const json = await response.json();
-      setData(json);
-  }
-
   useEffect(() => {
       const fetchData = async () => {
           try {
             // UPDATE ***** get rid of hardcode
-              const response = await fetch('http://127.0.0.1:8000/api/authors/6f48a898-82b9-49ff-b0fb-6a965545b1b6/inbox', {
+              const response = await fetch('http://127.0.0.1:8000/api/authors/2274ca0c-f481-4652-bee1-2d3f4ae9c2cd/inbox', {
                   method: 'GET',
                   headers: {
-                      'Authorization': 'Basic ' + btoa('team24:team24')
+                      'Authorization': 'Basic ' + btoa('jeff:password')
                   }
               });
               const data = await response.json();
@@ -80,23 +74,23 @@ export default function InboxNotificationDropdown() {
               }}
           >
               {data && data.results.map((item) => (
-                  // Update ***** to check item type and multple 
+                  // Update ***** multple obj
                   <Link to={item.object}>
-                  <MenuItem key={item.object}>
-                    {item.type === 'Post' && (
-                      <Link to={item.object}>You have received a new post</Link>
-                    )}
-                    {item.type === 'Comment' && (
-                      <Link to={item.object}>You have recieved a new comment</Link>
-                    )}
-                    {item.type === 'Like' && (
-                      <Link to={item.object}>You have recieved a new like</Link>
-                    )}
-                    {item.type === 'FollowRequest' && (
-                      <Link to={item.object}>You have a new follow request</Link>
-                    )}
-                  </MenuItem>
-                </Link>
+                    <MenuItem key={item.object}>
+                      {item.type === 'Post' && (
+                        <Link to={item.object}>You have received a new post</Link>
+                      )}
+                      {item.type === 'Comment' && (
+                        <Link to={item.object}>You have recieved a new comment</Link>
+                      )}
+                      {item.type === 'Like' && (
+                        <Link to={item.object}>You have recieved a new like</Link>
+                      )}
+                      {item.type === 'FollowRequest' && (
+                        <Link to={item.object}>You have a new follow request</Link>
+                      )}
+                    </MenuItem>
+                  </Link>
               ))}
           </Menu>
       </>
