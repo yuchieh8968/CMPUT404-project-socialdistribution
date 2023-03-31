@@ -68,7 +68,7 @@ export default function CreatePost() {
                 maxWidth={'md'}
                 >
                     <Container maxWidth="md">
-                        <Typography variant="h5" aria-label="Create A Post">
+                        <Typography sx={{paddingTop: 2, paddingBottom:2}} variant="h5" aria-label="Create A Post">
                             Create A Post
                         </Typography>
                         <form>
@@ -81,11 +81,12 @@ export default function CreatePost() {
                                 aria-label="Title of Post"
                                 value= {titleInput}
                                 onChange= {handleTitleInput}
+                                inputProps={{ maxLength: 50 }}
                             />
                             <TextField
                                 fullWidth
                                 multiline
-                                rows={8}
+                                rows={4}
                                 id="description"
                                 label="Description"
                                 variant="outlined"
@@ -93,7 +94,7 @@ export default function CreatePost() {
                                 aria-label="Body of Post"
                                 value= {bodyInput}
                                 onChange= {handleBodyInput}
-
+                                inputProps={{ maxLength: 250 }}
                             />
                             <ToggleButtonGroup
                                 color="primary"
@@ -101,6 +102,7 @@ export default function CreatePost() {
                                 exclusive
                                 onChange={handleChange}
                                 aria-label="Post's Visibility Choices"
+                                sx={{paddingTop: 2, paddingBottom:2}}
                             >
                                 <ToggleButton value="PUBLIC">Public </ToggleButton>
                                 <ToggleButton value="PRIVATE">Private</ToggleButton>
@@ -108,13 +110,14 @@ export default function CreatePost() {
                         </form>
 
                         <ImageUploader />
-
-                        <Button onClick={handleSubmit} variant="contained" endIcon={<PublishIcon />}>
-                                Publish
-                        </Button>
-                        <Button onClick={handleClose} variant="contained" endIcon={<CancelIcon />}>
-                                Cancel
-                        </Button>
+                        <Box  sx={{paddingTop: 2, paddingBottom:2}}>
+                            <Button sx={{marginRight: 2}} onClick={handleSubmit} variant="contained" endIcon={<PublishIcon />}>
+                                    Publish
+                            </Button>
+                            <Button onClick={handleClose} variant="contained" endIcon={<CancelIcon />}>
+                                    Cancel
+                            </Button>
+                        </Box>
                     </Container>
                 </Dialog>
             </Box>
