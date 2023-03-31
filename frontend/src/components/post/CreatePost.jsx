@@ -34,11 +34,10 @@ export default function CreatePost() {
         setBodyInput(event.target.value);
     };
 
-    // Exclusive Selection for Post's visibility
-    // https://mui.com/material-ui/react-toggle-button/#exclusive-selection
-    // FIX THIS IT CAN BE NULL WHEN YOU CLICK AGAIN ON THE BUTTON HIGHLIGHTED
     const handleChange = (event, newVisibility) => {
-        setVisibility(newVisibility);
+        if (newVisibility !== null){
+            setVisibility(newVisibility);
+        }
     };
 
     const handleClickOpen = () => {
