@@ -167,4 +167,5 @@ django_on_heroku.settings(locals())
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    'https://social-distro.herokuapp.com',
 ]

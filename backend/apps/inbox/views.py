@@ -37,17 +37,6 @@ class InboxListCreateView(ListCreateAPIView):
         authorInstance = Author.objects.get(id = authorID) #SQL select * from author where ID = author
         return serializer.save(author_id = authorInstance)
 
-# send post object into frontend
-def get_post_data(request):
-    # data = {
-    #     "author": "http://127.0.0.1:8000/api/authors/7427ff62-5d48-4bb9-91b3-3816a4487afe",
-    #     "object": "http://127.0.0.1:8000/api/authors/7427ff62-5d48-4bb9-91b3-3816a4487afe/posts/de3bc74a-a1a3-4a49-ba5b-d63875d6a027",
-    #     "type": "Post",
-    #     "summary": "Sent Post"
-    # }
-    data = {"message": "Hello from the backend!"}
-
-    return JsonResponse(data)
 
 # gets current url. Will use this later to parse out author (current logged in user) url
 def my_view(request):
