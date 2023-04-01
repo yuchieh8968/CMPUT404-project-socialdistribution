@@ -22,7 +22,7 @@ from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost
 from django.views.generic.base import RedirectView
 from apps.inbox.views import InboxListCreateView
 from django.contrib.auth import views
-from apps.likes.views import Post_A_Like, Get_Like_For_Post, Get_Like_For_Comment
+from apps.likes.views import Get_Like_For_Post, Get_Like_For_Comment, Get_Liked
 
 # class AuthorIDConverter:
 #       regex = r".+?(?=\/posts)"
@@ -98,13 +98,16 @@ urlpatterns = [
 
     # # likes
     # Send like to author
-    # TODO: This api is complete but for some reason gives 400.
-    #path('api/authors/<path:author_id>/inbox/',
+    # XXX: This api is complete but for some reason gives 400.
+    # path('api/authors/<path:author_id>/inbox/',
     #     Post_A_Like.as_view(), name="Send like to author"),
     path('api/authors/<path:author_id>/posts/<path:post_id>/likes', Get_Like_For_Post.as_view(),
          name="Likes on post"),                               # Get likes on post
-    path('api/authors/<path:author_id>/posts/<path:post_id>/comments/<path:comment_id>/likes', Get_Like_For_Comment.as_view(), name="Likes on comment"),  # Get likes on comment
-    # path('api/authors/<path:author_id>/liked', XXX, name="Author likes"),                                                    # See what author_id has liked
+    path('api/authors/<path:author_id>/posts/<path:post_id>/comments/<path:comment_id>/likes',
+         Get_Like_For_Comment.as_view(), name="Likes on comment"),  # Get likes on comment
+    # See what author_id has liked
+    path('api/authors/<str:author_id>/liked',
+         Get_Liked.as_view(), name="Author liked"),
 
     # # inbox
     # Inbox = new posts from who you follow
