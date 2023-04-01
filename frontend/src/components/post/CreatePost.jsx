@@ -48,6 +48,8 @@ export default function CreatePost() {
         if (reason && reason == "backdropClick") {
             return;
         }
+        setTitleInput("")
+        setBodyInput("")
         setOpen(false);
     };
 
@@ -71,7 +73,7 @@ export default function CreatePost() {
                         <Typography sx={{paddingTop: 2, paddingBottom:2}} variant="h5" aria-label="Create A Post">
                             Create A Post
                         </Typography>
-                        <form>
+
                             <TextField
                                 fullWidth
                                 id="title"
@@ -107,17 +109,17 @@ export default function CreatePost() {
                                 <ToggleButton value="PUBLIC">Public </ToggleButton>
                                 <ToggleButton value="PRIVATE">Private</ToggleButton>
                             </ToggleButtonGroup>
-                        </form>
 
-                        <ImageUploader />
-                        <Box  sx={{paddingTop: 2, paddingBottom:2}}>
-                            <Button sx={{marginRight: 2}} onClick={handleSubmit} variant="contained" endIcon={<PublishIcon />}>
-                                    Publish
-                            </Button>
-                            <Button onClick={handleClose} variant="contained" endIcon={<CancelIcon />}>
-                                    Cancel
-                            </Button>
-                        </Box>
+                            <ImageUploader />
+
+                            <Box  sx={{paddingTop: 2, paddingBottom:2}}>
+                                <Button type="button" sx={{marginRight: 2}} onClick={handleSubmit} variant="contained" endIcon={<PublishIcon />}>
+                                        Publish
+                                </Button>
+                                <Button type="button" onClick={handleClose} variant="contained" endIcon={<CancelIcon />}>
+                                        Cancel
+                                </Button>
+                            </Box>
                     </Container>
                 </Dialog>
             </Box>
