@@ -21,6 +21,7 @@ from apps.authors.views import Author_All, Author_Individual, SignUp
 from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost
 from django.views.generic.base import RedirectView
 from apps.inbox.views import InboxListCreateView
+from apps.followers.views import FollowerListCreateView
 from django.contrib.auth import views
 
 # class AuthorIDConverter:
@@ -71,7 +72,7 @@ urlpatterns = [
     path('remote-post', GuiPost, name="Gui Post"),
 
     # # followers
-    # path('api/authors/<path:author_id>/followers', XXX, name="Author_id's followers"),                                       # Author_id's followers
+    path('api/authors/<path:author_id>/followers', FollowerListCreateView.as_view(), name="Followers"),                                 # Author_id's followers
     # path('api/authors/<path:author_id>/followers/<path:foreign_author_id>', XXX, name="Follower of author_id"),               # Specific follower of author_id
 
     # # posts
