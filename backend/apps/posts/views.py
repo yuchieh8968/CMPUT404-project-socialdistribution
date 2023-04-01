@@ -228,6 +228,7 @@ class ImagePost(GenericAPIView):
     serializer_class = PostSerializer
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]    
+    pagination_class = None
     
     def get(self, request, author_id, post_id, format=None):
         """
