@@ -10,8 +10,10 @@ import uuid
 #     obj = models.URLField(max_length=255, blank=False, null=False)
 
 
+
 class Like(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    author = models.ForeignKey(
-        Author, on_delete=models.CASCADE, null=False, blank=False)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, null=False, blank=False)
     object = models.URLField(blank=False)
+
+
