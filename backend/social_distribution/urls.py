@@ -72,12 +72,6 @@ urlpatterns = [
     # API schema endpoint (used for dynamic swagger docs generation)
     path('api/schema/', get_schema_view(), name='API Schema'),
 
-    # Django admin site
-    path('admin/', admin.site.urls),
-    # Prefix for API login and logout
-    path('api/auth/', include('rest_framework.urls')),
-    # API schema endpoint (used for dynamic swagger docs generation)
-    path('api/schema/', get_schema_view(), name='API Schema'),
     path('api/docs/', TemplateView.as_view(
         template_name='swagger-ui.html',
         extra_context={'schema_url': 'API Schema'}
@@ -87,23 +81,23 @@ urlpatterns = [
     path('remote-post', GuiPost, name="Gui Post"),
 
     # # followers
-    # path('api/authors/<path:author_id>/followers', XXX, name="Author_id's followers"),                                       # Author_id's followers
-    # path('api/authors/<path:author_id>/followers/<path:foreign_author_id>', XXX, name="Follower of author_id"),               # Specific follower of author_id
+    # path('api/authors/<str:author_id>/followers', XXX, name="Author_id's followers"),                                       # Author_id's followers
+    # path('api/authors/<str:author_id>/followers/<str:foreign_author_id>', XXX, name="Follower of author_id"),               # Specific follower of author_id
 
     # # posts
-    # path('api/authors/<path:author_id>/posts/<path:post_id>/image', XXX, name="Image post"),                                  # Image post
+    # path('api/authors/<str:author_id>/posts/<str:post_id>/image', XXX, name="Image post"),                                  # Image post
 
     # # comments
-    # path('api/authors/<path:author_id>/posts/<path:post_id>/comments', XXX, name="Comments on post"),                         # Comments on post
+    # path('api/authors/<str:author_id>/posts/<str:post_id>/comments', XXX, name="Comments on post"),                         # Comments on post
 
     # # likes
     # Send like to author
     # XXX: This api is complete but for some reason gives 400.
-    # path('api/authors/<path:author_id>/inbox/',
+    # path('api/authors/<str:author_id>/inbox/',
     #     Post_A_Like.as_view(), name="Send like to author"),
-    path('api/authors/<path:author_id>/posts/<path:post_id>/likes', Get_Like_For_Post.as_view(),
+    path('api/authors/<str:author_id>/posts/<str:post_id>/likes', Get_Like_For_Post.as_view(),
          name="Likes on post"),                               # Get likes on post
-    path('api/authors/<path:author_id>/posts/<path:post_id>/comments/<path:comment_id>/likes',
+    path('api/authors/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes',
          Get_Like_For_Comment.as_view(), name="Likes on comment"),  # Get likes on comment
     # See what author_id has liked
     path('api/authors/<str:author_id>/liked',
@@ -111,6 +105,6 @@ urlpatterns = [
 
     # # inbox
     # Inbox = new posts from who you follow
-    path('api/authors/<path:author_id>/inbox',
+    path('api/authors/<str:author_id>/inbox',
          InboxListCreateView.as_view(), name="Inbox"),
 ]
