@@ -22,3 +22,9 @@ class AuthorSerializer(serializers.ModelSerializer):
         model = Author
         fields = ['type', 'id', 'url', 'host', 'displayName', 'github', 'profileImage']
 
+
+
+class InfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ['id']

@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.request import Request
 from .models import Author
-from .serializers import AuthorSerializer
+from .serializers import AuthorSerializer, InfoSerializer
 from rest_framework.generics import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import ListAPIView, GenericAPIView
@@ -23,6 +23,15 @@ class SignUp(generic.CreateView):
     success_url = "/login"
     template_name = "signup.html"
 
+
+class MyInfo(GenericAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = InfoSerializer
+    
+    def get(self, request):
+        serializer = self.serializer_class(request.user)
+        return Response(serializer.data)
 
 
 class Author_All(ListAPIView):
