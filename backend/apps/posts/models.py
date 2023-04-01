@@ -27,7 +27,7 @@ class Post(models.Model):
     contentType = models.CharField(
         choices=CONTENT_CHOICES, max_length=20, default="text/plain")
     
-    content = models.CharField(max_length=1000, blank=False, null=False)
+    content = models.TextField(blank=False, null=False) # changed to textfield for images
     
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
