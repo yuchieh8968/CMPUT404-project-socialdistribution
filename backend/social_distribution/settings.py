@@ -171,3 +171,9 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 django_on_heroku.settings(locals())
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    'https://social-distro.herokuapp.com',
+]

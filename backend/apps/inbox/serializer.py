@@ -10,3 +10,6 @@ class InboxSerializer(serializers.ModelSerializer):
     class Meta:
         model = Inbox
         fields = ('author', "object",'type', 'summary')
+
+    def build_id(self, inbox):
+        print(str(inbox.sender)) 
