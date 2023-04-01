@@ -42,7 +42,7 @@ urlpatterns = [
     path('signup', SignUp.as_view(), name="sign-up"),
     
     # get my id
-    path('me', MyInfo.as_view(), name="my info"),
+    path('api/utils/me', MyInfo.as_view(), name="my info"),
 
     # posts
     path('api/authors/<str:author_id>/posts/<str:post_id>', Post_Individual.as_view(),
