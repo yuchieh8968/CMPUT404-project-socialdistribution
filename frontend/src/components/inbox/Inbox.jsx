@@ -21,7 +21,7 @@ export default function InboxNotificationDropdown() {
               const response = await fetch('http://127.0.0.1:8000/api/authors/2274ca0c-f481-4652-bee1-2d3f4ae9c2cd/inbox', {
                   method: 'GET',
                   headers: {
-                      'Authorization': 'Basic ' + btoa('jeff:password')
+                      'Authorization': 'Basic ' + btoa('test_user:password')
                   }
               });
               const data = await response.json();

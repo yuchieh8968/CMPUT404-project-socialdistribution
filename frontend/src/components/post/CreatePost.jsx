@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import TextField from "@mui/material/TextField";
@@ -12,31 +12,98 @@ import PublishIcon from '@mui/icons-material/Publish';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CreateIcon from '@mui/icons-material/Create';
 import { Dialog, Icon, IconButton } from "@mui/material";
+import { Cancel, Tag } from "@mui/icons-material";
+import { FormControl, Stack} from "@mui/material";
+import axios from "axios";
+
+
+///https://blog.theashishmaurya.me/how-to-create-a-tag-input-feature-in-reactjs-and-material-ui///
+const Tags = ({ data, handleDelete }) => {
+  return (
+    <Box
+      sx={{
+        background: "#283240",
+        height: "100%",
+        display: "flex",
+        padding: "0.4rem",
+        margin: "0 0.5rem 0 0",
+        justifyContent: "center",
+        alignContent: "center",
+        color: "#ffffff",
+      }}
+    >
+      <Stack direction='row' gap={1}>
+        <Typography>{data}</Typography>
+        <Cancel
+          sx={{ cursor: "pointer" }}
+          onClick={() => {
+            handleDelete(data);
+          }}
+        />
+      </Stack>
+    </Box>
+  );
+};
 
 export default function CreatePost() {
-    const [titleInput, setTitleInput] = useState('');
-    const [bodyInput, setBodyInput] = useState('');
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [contentType, setContentType] = useState('text/plain');
+    const [content, setContent] = useState('');
     const [visibility, setVisibility] = React.useState("PUBLIC");
     const [open, setOpen] = React.useState(false);
+    const [tags, SetTags] = useState([]);
+    const tagRef = useRef();
+
+    const handleDelete = (value) => {
+      const newtags = tags.filter((val) => val !== value);
+      SetTags(newtags);
+    };
+    const handleOnSubmit = (e) => {
+      e.preventDefault();
+      SetTags([...tags, tagRef.current.value]);
+      tagRef.current.value = "";
+    };
 
     // TO DO AXIOS API CALL
-    const handleSubmit = () => {
-        console.log("Title " + titleInput);
-        console.log("Body " + bodyInput);
-        console.log("Visibility " + visibility);
+    async function handleSubmit() {
+        const res = await fetch("http://127.0.0.1:8000/api/authors/32e4e404-cb69-4f2f-9bfc-1bbdbc318bc7/posts/", {
+            method: 'post',
+            headers: {
+                'Authorization': 'Basic ' + btoa('test_user:password'),
+            },
+            data: {
+                title: title,
+                description: description,
+                contentType: contentType,
+                content: content,
+                categories: tags,
+                visibility: visibility,
+            }
+        });
     }
 
     const handleTitleInput = event => {
-        setTitleInput(event.target.value);
+        setTitle(event.target.value);
     };
 
-    const handleBodyInput = event => {
-        setBodyInput(event.target.value);
+    const handleDescriptionInput = event => {
+        setDescription(event.target.value);
+    };
+
+    const handleContentInput = event => {
+        setContent(event.target.value);
     };
 
     const handleChange = (event, newVisibility) => {
         if (newVisibility !== null){
             setVisibility(newVisibility);
+        }
+    };
+
+    const handleTypeChange = (event, newVisibility) => {
+        if (newVisibility !== null){
+            setContentType(newVisibility);
         }
     };
 
@@ -48,8 +115,9 @@ export default function CreatePost() {
         if (reason && reason == "backdropClick") {
             return;
         }
-        setTitleInput("")
-        setBodyInput("")
+        setTitle("");
+        setDescription("");
+        setContent("");
         setOpen(false);
     };
 
@@ -81,7 +149,7 @@ export default function CreatePost() {
                                 variant="outlined"
                                 margin="normal"
                                 aria-label="Title of Post"
-                                value= {titleInput}
+                                value= {title}
                                 onChange= {handleTitleInput}
                                 inputProps={{ maxLength: 50 }}
                             />
@@ -93,11 +161,57 @@ export default function CreatePost() {
                                 label="Description"
                                 variant="outlined"
                                 margin="normal"
-                                aria-label="Body of Post"
-                                value= {bodyInput}
-                                onChange= {handleBodyInput}
+                                aria-label="Description of Post"
+                                value= {description}
+                                onChange= {handleDescriptionInput}
                                 inputProps={{ maxLength: 250 }}
                             />
+                            <ToggleButtonGroup
+                                color="primary"
+                                value={contentType}
+                                exclusive
+                                onChange={handleTypeChange}
+                                aria-label="Post's Content Type Choices"
+                                sx={{paddingTop: 2, paddingBottom:2}}
+                            >
+                                <ToggleButton value="text/plain">Plain</ToggleButton>
+                                <ToggleButton value="text/markdown">Markdown</ToggleButton>
+                            </ToggleButtonGroup>
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={4}
+                                id="content"
+                                label="Content"
+                                variant="outlined"
+                                margin="normal"
+                                aria-label="Content of Post"
+                                value= {content}
+                                onChange= {handleContentInput}
+                                inputProps={{ maxLength: 250 }}
+                            />
+                            <form onSubmit={handleOnSubmit}>
+                                <TextField
+                                inputRef={tagRef}
+                                fullWidth
+                                variant='standard'
+                                size='small'
+                                sx={{ margin: "1rem 0" }}
+                                margin='none'
+                                placeholder={tags.length < 5 ? "Enter tags" : ""}
+                                InputProps={{
+                                    startAdornment: (
+                                    <Box sx={{ margin: "0 0.2rem 0 0", display: "flex" }}>
+                                        {tags.map((data, index) => {
+                                        return (
+                                            <Tags data={data} handleDelete={handleDelete} key={index} />
+                                        );
+                                        })}
+                                    </Box>
+                                    ),
+                                }}
+                                />
+                            </form>
                             <ToggleButtonGroup
                                 color="primary"
                                 value={visibility}
