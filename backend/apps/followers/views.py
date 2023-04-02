@@ -24,10 +24,8 @@ class FollowerCreateView(GenericAPIView):
     
 
     def put(self, request, *args, **kwargs):
-        print("XXXX")
         author_instance = Author.objects.get(id=kwargs.get("author_id"))
         new_follower_data = {"actor":kwargs.get("foreign_author_id"),"object":kwargs.get("author_id")}
-        print(new_follower_data)
         serializer = self.get_serializer(data=new_follower_data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -41,6 +39,13 @@ class FollowerCreateView(GenericAPIView):
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
     
+    def delete(self, request, *args, **kwargs):
+        try:
+            instance = Follow.objects.get(actor=kwargs.get("foreign_author_id"), object=kwargs.get("author_id"))
+            instance.delete()
+        except Follow.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
 
 # gets current url. Will use this later to parse out author (current logged in user) url
