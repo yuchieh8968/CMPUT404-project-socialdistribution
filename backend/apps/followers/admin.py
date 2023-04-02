@@ -1,5 +1,5 @@
 from django.contrib import admin
-# from .models import Author_Follows
+from .models import Follow
 
 # Register your models here.
-# admin.site.register(Author_Follows)
+admin.site.register(Follow)

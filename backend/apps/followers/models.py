@@ -38,9 +38,12 @@ from apps.authors.models import Author
 
 """
 class Follow(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    actor = models.ForeignKey(Author, on_delete=models.CASCADE, null=False, blank=False)
-    object = models.URLField(null=False, blank=False)
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4) 
+    # followee
+    object = models.ForeignKey(Author, on_delete=models.CASCADE, null=False, blank=False)
+    # follower 
+    actor = models.URLField(null=False, blank=False)
+    type = models.CharField(max_length=20, blank=False, null=False, default="Follow")
 
 # class Follow(models.Model):
 #     pass
