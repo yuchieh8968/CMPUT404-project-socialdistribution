@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractUser, AbstractBaseUser
 from django.contrib.auth.base_user import BaseUserManager
 from urllib.parse import quote
 import uuid
+from django.conf import settings
 # Create your models here.
 
 # class AllowedRemotes(models.Model):
@@ -77,6 +78,10 @@ class Author(AbstractBaseUser):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
+    
+    def build_author_id(self):
+        host = settings.HOST
+        return f"{host}/api/authors/{str(self.id)}"
     
     # def save(self, *args, **kwargs):
     #     if self._state.adding:

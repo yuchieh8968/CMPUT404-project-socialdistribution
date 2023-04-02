@@ -34,8 +34,8 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 CONNECTED_TEAMS = {
-    "127.0.0.1" : {"username": "Bob", "password": "Bob"},
-    "social-distro.herokuapp.com" : {"username": "idk", "password": "idk"},
+    "127.0.0.1" : {"username": "team24", "password": "team24"},
+    "social-distro.herokuapp.com" : {"username": "team24", "password": "team24"},
     # "http://127.0.0.1:8000" : {"username": "idk", "password": "idk"},
 }
 
