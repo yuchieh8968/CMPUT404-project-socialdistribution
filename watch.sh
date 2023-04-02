@@ -1,0 +1,1 @@
+./tailwindcss -i backend/input.css -o backend/apps/authors/static/authors/output.css --watch

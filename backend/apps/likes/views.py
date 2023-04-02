@@ -58,6 +58,7 @@ Likes  -------------------------------------------
 
 
 class Get_Like_For_Post(GenericAPIView):
+    schema = AutoSchema(operation_id_base="PostLikes")
     serializer_class = LikeSerializer
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
@@ -83,6 +84,7 @@ class Get_Like_For_Post(GenericAPIView):
 
 
 class Get_Like_For_Comment(GenericAPIView):
+    schema = AutoSchema(operation_id_base="CommentLikes")
     serializer_class = LikeSerializer
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]

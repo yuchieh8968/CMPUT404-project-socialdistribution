@@ -48,14 +48,16 @@ export default function NavBar() {
     };
 
     const handleProfileClick = () => {
-        let path = '/Profile';
+        let path = '/profile/';
         navigate(path);
+        navigate(0);
     }
 
     const handleLogOutClick = () => {
         // TO DO: LOG OUT USER
-        let path = '/Login';
+        let path = '/logout/';
         navigate(path);
+        navigate(0);
     }
 
     const handleMobileMenuOpen = (event) => {
@@ -93,7 +95,7 @@ export default function NavBar() {
                             variant="h6"
                             noWrap
                             component="a"
-                            href="/Home"
+                            href="/home/"
                             sx={{
                             mr: 2,
                             display: { xs: 'none', md: 'flex' },

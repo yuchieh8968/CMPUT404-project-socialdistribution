@@ -17,13 +17,14 @@ from django.contrib import admin
 from django.urls import include, path, register_converter
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
-from apps.authors.views import Author_All, Author_Individual, SignUp
+from apps.authors.views import Author_All, Author_Individual, SignUp, MyInfo, LocalProfileEdit, AnyProfileView
 from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost, ImagePost
 from django.views.generic.base import RedirectView
 from apps.inbox.views import InboxListCreateView
 from apps.followers.views import FollowerCreateView, FollowerListCreateView
 from django.contrib.auth import views
 from apps.likes.views import Get_Like_For_Post, Get_Like_For_Comment, Get_Liked
+from apps.docs.views import react
 
 # class AuthorIDConverter:
 #       regex = r".+?(?=\/posts)"
@@ -40,10 +41,13 @@ from apps.likes.views import Get_Like_For_Post, Get_Like_For_Comment, Get_Liked
 urlpatterns = [
 
     # sign-up
-    path('signup', SignUp.as_view(), name="sign-up"),
+    path('signup/', SignUp.as_view(), name="sign-up"),
+    
+    # get my id
+    path('api/utils/me/', MyInfo.as_view(), name="my info"),
 
     # posts
-    path('api/authors/<str:author_id>/posts/<str:post_id>', Post_Individual.as_view(),
+    path('api/authors/<str:author_id>/posts/<str:post_id>/', Post_Individual.as_view(),
          name="Specific post"),                                     # Specific post
     # Recent posts from author, or create new one with new id
     path('api/authors/<str:author_id>/posts/',
@@ -59,17 +63,17 @@ urlpatterns = [
     # https://stackoverflow.com/questions/14959217/django-url-redirect
     path('', RedirectView.as_view(url='api/docs/', permanent=False), name='index'),
 
-    path('home', TemplateView.as_view(template_name='index.html')),  # react app
-    path('profile', TemplateView.as_view(
-        template_name='index.html')),  # react app
+    path('home/', react),  # react app
+    path('profile/', LocalProfileEdit, name="my profile"),  # profile edit page (only for our local users)
+    path('api/utils/profile/', AnyProfileView.as_view(), name="any profile"), # profile view page (for any user on our connected teams)
 
     # admin, auth, api-schema, and api docs
     # Django admin site
     path('admin/', admin.site.urls),
     # path('api/auth/', include('rest_framework.urls')),              # Prefix for API login and logout
-    path('login', views.LoginView.as_view(
+    path('login/', views.LoginView.as_view(
         template_name='login.html'), name='login'),
-    path('logout', views.LogoutView.as_view(), name='logout'),
+    path('logout/', views.LogoutView.as_view(), name='logout'),
     # API schema endpoint (used for dynamic swagger docs generation)
     path('api/schema/', get_schema_view(), name='API Schema'),
 
@@ -79,14 +83,14 @@ urlpatterns = [
     ), name='swagger-ui'),                                          # Prefix for documentation pages (currently /docs/api/ only)
 
     # path('authors/<str:author_text>/posts/<str:post_text>', GuiPost, name="Gui Post"),
-    path('remote-post', GuiPost, name="Gui Post"),
+    path('remote-post/', GuiPost, name="Gui Post"),
 
     # # followers
     path('api/authors/<uuid:author_id>/followers/<path:foreign_author_id>/', FollowerCreateView.as_view(), name="Followers"),             # Specific follower of author_id
     path('api/authors/<str:author_id>/followers', FollowerListCreateView.as_view(), name="Follower of author_id"),                               # Author_id's followers
 
     # # posts
-    path('api/authors/<str:author_id>/posts/<str:post_id>/image', ImagePost.as_view(), name="Image post"),                                  # Image post
+    path('api/authors/<str:author_id>/posts/<str:post_id>/image/', ImagePost.as_view(), name="Image post"),                                  # Image post
 
 
     # # comments
@@ -97,16 +101,16 @@ urlpatterns = [
     # XXX: This api is complete but for some reason gives 400.
     # path('api/authors/<str:author_id>/inbox/',
     #     Post_A_Like.as_view(), name="Send like to author"),
-    path('api/authors/<str:author_id>/posts/<str:post_id>/likes', Get_Like_For_Post.as_view(),
+    path('api/authors/<str:author_id>/posts/<str:post_id>/likes/', Get_Like_For_Post.as_view(),
          name="Likes on post"),                               # Get likes on post
-    path('api/authors/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes',
+    path('api/authors/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes/',
          Get_Like_For_Comment.as_view(), name="Likes on comment"),  # Get likes on comment
     # See what author_id has liked
-    path('api/authors/<str:author_id>/liked',
+    path('api/authors/<str:author_id>/liked/',
          Get_Liked.as_view(), name="Author liked"),
 
     # # inbox
     # Inbox = new posts from who you follow
-    path('api/authors/<str:author_id>/inbox',
+    path('api/authors/<str:author_id>/inbox/',
          InboxListCreateView.as_view(), name="Inbox"),
 ]

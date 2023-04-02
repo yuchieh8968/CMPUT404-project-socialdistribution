@@ -33,7 +33,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-APPEND_SLASH = False
+CONNECTED_TEAMS = {
+    "127.0.0.1" : {"username": "Bob", "password": "Bob"},
+    "social-distro.herokuapp.com" : {"username": "idk", "password": "idk"},
+    # "http://127.0.0.1:8000" : {"username": "idk", "password": "idk"},
+}
+
+APPEND_SLASH = True
 
 # ALLOW REACT
 CORS_ORIGIN_WHITELIST = [

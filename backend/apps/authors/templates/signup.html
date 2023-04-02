@@ -1,6 +1,79 @@
 <!DOCTYPE html>
+<style>
+
+/* https://codepen.io/t_afif/pen/abGJGdm */
+html {
+  --s: 150px; /* control the size */
+  
+  --_g: #0000 90deg,#046D8B 0;
+  background:
+    conic-gradient(from 116.56deg at calc(100%/3) 0   ,var(--_g)),
+    conic-gradient(from -63.44deg at calc(200%/3) 100%,var(--_g))
+    #2FB8AC;
+  background-size: var(--s) var(--s);
+} 
+
+p {
+  font-size: large;
+}
+
+/* body {
+  background-color: aqua;
+  text-align: center;
+  background-color: #97ffb2;
+  opacity: 0.8;
+  background: radial-gradient(circle, transparent 20%, #97ffb2 20%, #97ffb2 80%, transparent 80%, transparent), radial-gradient(circle, transparent 20%, #97ffb2 20%, #97ffb2 80%, transparent 80%, transparent) 25px 25px, linear-gradient(#11122c 2px, transparent 2px) 0 -1px, linear-gradient(90deg, #11122c 2px, #97ffb2 2px) -1px 0;
+  background-size: 50px 50px, 50px 50px, 25px 25px, 25px 25px;
+} */
+
+h2 {
+  font-size: xx-large;
+}
+
+/* https://getcssscan.com/css-buttons-examples */
+button {
+  background: #5E5DF0;
+  border-radius: 999px;
+  box-shadow: #5E5DF0 0 10px 20px -10px;
+  box-sizing: border-box;
+  color: #FFFFFF;
+  cursor: pointer;
+  font-family: Inter,Helvetica,"Apple Color Emoji","Segoe UI Emoji",NotoColorEmoji,"Noto Color Emoji","Segoe UI Symbol","Android Emoji",EmojiSymbols,-apple-system,system-ui,"Segoe UI",Roboto,"Helvetica Neue","Noto Sans",sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  opacity: 1;
+  outline: 0 solid transparent;
+  padding: 8px 18px;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: fit-content;
+  word-break: break-word;
+  border: 0;
+}
+
+.bg {
+  text-align: center;
+  background-color: aliceblue;
+  margin: auto;
+  width: 40%;
+  padding: 10px;
+  border-radius: 25px;
+  position: relative;
+  top: 50%;
+  transform: translateY(50%);
+  padding-bottom: 50px;
+}
+
+
+</style>
+<body>
+  <div class="bg">
 <h2>Sign up</h2>
 <form method="post">
   {% csrf_token %} {{ form.as_p }}
   <button type="submit">Sign Up</button>
 </form>
+</div>
+</body>
