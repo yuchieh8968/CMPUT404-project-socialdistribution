@@ -21,7 +21,7 @@ from apps.authors.views import Author_All, Author_Individual, SignUp
 from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost
 from django.views.generic.base import RedirectView
 from apps.inbox.views import InboxListCreateView
-from apps.followers.views import FollowerListCreateView
+from apps.followers.views import FollowerCreateView
 from django.contrib.auth import views
 
 # class AuthorIDConverter:
@@ -72,21 +72,21 @@ urlpatterns = [
     path('remote-post', GuiPost, name="Gui Post"),
 
     # # followers
-    path('api/authors/<path:author_id>/followers', FollowerListCreateView.as_view(), name="Followers"),                                 # Author_id's followers
-    # path('api/authors/<path:author_id>/followers/<path:foreign_author_id>', XXX, name="Follower of author_id"),               # Specific follower of author_id
+    path('api/authors/<uuid:author_id>/followers/<path:foreign_author_id>/', FollowerCreateView.as_view(), name="Followers"),                                 # Author_id's followers
+    # path('api/authors/<str:author_id>/followers/<str:foreign_author_id>', XXX, name="Follower of author_id"),               # Specific follower of author_id
 
     # # posts
-    # path('api/authors/<path:author_id>/posts/<path:post_id>/image', XXX, name="Image post"),                                  # Image post
+    # path('api/authors/<str:author_id>/posts/<str:post_id>/image', XXX, name="Image post"),                                  # Image post
 
     # # comments
-    # path('api/authors/<path:author_id>/posts/<path:post_id>/comments', XXX, name="Comments on post"),                         # Comments on post
+    # path('api/authors/<str:author_id>/posts/<str:post_id>/comments', XXX, name="Comments on post"),                         # Comments on post
 
     # # likes
-    # path('api/authors/<path:author_id>/inbox/', XXX, name="Send like to author"),                                            # Send like to author
-    # path('api/authors/<path:author_id>/posts/<path:post_id>/likes', XXX, name="Likes on post"),                               # Get likes on post
-    # path('api/authors/<path:author_id>/posts/<path:post_id>/comments/<path:comment_id>/likes', XXX, name="Likes on comment"),  # Get likes on comment
-    # path('api/authors/<path:author_id>/liked', XXX, name="Author likes"),                                                    # See what author_id has liked
+    # path('api/authors/<str:author_id>/inbox/', XXX, name="Send like to author"),                                            # Send like to author
+    # path('api/authors/<str:author_id>/posts/<str:post_id>/likes', XXX, name="Likes on post"),                               # Get likes on post
+    # path('api/authors/<str:author_id>/posts/<str:post_id>/comments/<str:comment_id>/likes', XXX, name="Likes on comment"),  # Get likes on comment
+    # path('api/authors/<str:author_id>/liked', XXX, name="Author likes"),                                                    # See what author_id has liked
 
     # # inbox
-    path('api/authors/<path:author_id>/inbox', InboxListCreateView.as_view(), name="Inbox"),                                                           # Inbox = new posts from who you follow
+    path('api/authors/<str:author_id>/inbox', InboxListCreateView.as_view(), name="Inbox"),                                                           # Inbox = new posts from who you follow
 ]
