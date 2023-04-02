@@ -29,10 +29,14 @@ class FollowerCreateView(GenericAPIView):
         new_follower_data = {"actor":kwargs.get("foreign_author_id"),"object":kwargs.get("author_id")}
         print(new_follower_data)
         serializer = self.get_serializer(data=new_follower_data)
-
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    def get(self, request, *args, **kwargs):
+        instance = Follow.objects.get(actor=kwargs.get("foreign_author_id"), object=kwargs.get("author_id"))
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
     
     
 
