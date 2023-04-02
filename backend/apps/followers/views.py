@@ -34,7 +34,10 @@ class FollowerCreateView(GenericAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     
     def get(self, request, *args, **kwargs):
-        instance = Follow.objects.get(actor=kwargs.get("foreign_author_id"), object=kwargs.get("author_id"))
+        try:
+            instance = Follow.objects.get(actor=kwargs.get("foreign_author_id"), object=kwargs.get("author_id"))
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = self.get_serializer(instance)
         return Response(serializer.data)
     
