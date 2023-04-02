@@ -1,7 +1,7 @@
 from rest_framework.response import Response
 from rest_framework.request import Request
 from .models import Author
-from .serializers import AuthorSerializer, InfoSerializer
+from .serializers import AuthorSerializer, InfoSerializer, AnyProfileSerializer
 from rest_framework.generics import get_object_or_404
 from rest_framework import status
 from rest_framework.generics import ListAPIView, GenericAPIView
@@ -12,6 +12,13 @@ from django.urls import reverse_lazy
 from django.views import generic
 from .admin import CustomUserCreationForm
 # from apps.authors.remoteauth import RemoteAuth
+from django.shortcuts import render
+import requests
+from requests import Response as res
+from urllib.parse import urlparse
+from django.conf import settings
+from django.http import Http404
+from django.shortcuts import redirect
 
 
 # Create your views here.
@@ -28,10 +35,48 @@ class MyInfo(GenericAPIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
     serializer_class = InfoSerializer
+    pagination_class = None
     
     def get(self, request):
         serializer = self.serializer_class(request.user)
         return Response(serializer.data)
+    
+
+def LocalProfileEdit(request):
+    author = request.user
+    if not author.is_active:
+        return redirect(reverse_lazy('login'))
+    return render(request, 'profile-edit.html', {"author": author})
+
+class AnyProfileView(GenericAPIView):
+    """
+    Used to render an author's profile, except the profile can be from any of our connected teams.
+    POST request body just requires the url to fetch the author's profile.
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = AnyProfileSerializer
+    pagination_class = None
+
+    def post(self, request: Request):
+
+        serializer = AnyProfileSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        url = serializer.validated_data["url"]
+        if not url.endswith('/'):
+            url = url + '/'
+
+        host = urlparse(url).hostname
+
+        if host in settings.CONNECTED_TEAMS:
+            user = settings.CONNECTED_TEAMS[host]["username"]
+            password = settings.CONNECTED_TEAMS[host]["password"]
+            r : res = requests.get(url, auth=(user, password))
+            context = r.json()
+            return render(request, 'profile-view.html', context)
+        else:
+            raise Http404
 
 
 class Author_All(ListAPIView):

@@ -28,3 +28,6 @@ class InfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ['id']
+
+class AnyProfileSerializer(serializers.Serializer):
+    url = serializers.URLField(required=True)
