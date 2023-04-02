@@ -17,7 +17,7 @@ function App() {
             {/* <Route exact path="/" element={<Navigate to="/home" />} /> */}
             {/* <Route path="/login" element={(<Login />)} /> */}
             {/* <Route path="/signup" element={(<Signup />)} /> */}
-            <Route path="/profile" element={(<Profile />)} />
+            {/* <Route path="/profile" element={(<Profile />)} /> */}
             <Route path="/home" element={(<Home />)} />
           </Routes>
       </Router>
