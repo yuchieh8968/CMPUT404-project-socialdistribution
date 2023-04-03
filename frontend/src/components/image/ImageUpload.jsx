@@ -8,7 +8,21 @@ export default function ImageUploader(props) {
     const [postImage, setPostImage] = useState("");
     //URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/image
 
-
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              // Does this cookie string begin with the name we want?
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
     const createPost = async () => {
         try {
           const currentAuthorResponse = await fetch('https://social-distro.herokuapp.com/api/utils/me/', {
@@ -17,7 +31,7 @@ export default function ImageUploader(props) {
                 'Authorization': 'Basic ' + btoa('team24:team24')
             }
             });
-
+          const csrftoken = getCookie('csrftoken');
           const currentAuthor = await currentAuthorResponse.json();
           const url = 'https://social-distro.herokuapp.com/api/authors/'+ currentAuthor.id +'/posts/'
           const data = {
@@ -30,7 +44,8 @@ export default function ImageUploader(props) {
             unlisted: true
           };
           await axios.post(url, data, { headers: {
-            'Authorization': 'Basic ' + btoa('team24:team24'),}
+            'Authorization': 'Basic ' + btoa('team24:team24'),
+            'X-CSRFToken': csrftoken,}
           })
         } catch (error) {
         console.log(error.message);
