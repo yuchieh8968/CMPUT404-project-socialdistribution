@@ -18,7 +18,7 @@ from django.urls import include, path, register_converter
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
 from apps.authors.views import Author_All, Author_Individual, SignUp, MyInfo, LocalProfileEdit, AnyProfileView, EditProfile, Test
-from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost, ImagePost, Post_All_Public
+from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost, ImagePost, Post_All_Public, ViewPost
 from django.views.generic.base import RedirectView
 from apps.inbox.views import InboxListCreateView
 from apps.followers.views import FollowerCreateView, FollowerListCreateView
@@ -29,7 +29,11 @@ from apps.docs.views import react
 
 urlpatterns = [
 
+    path('api/utils/profile/', AnyProfileView.as_view(), name="any profile"), # profile view page (for any user on our connected teams)
+
     # path('test/', Test, name="TEST"),
+
+    path('view/<path:post_full_id>', ViewPost, name="view post"),
 
     # all public and not unlisted posts
     path('api/utils/posts/', Post_All_Public.as_view(), name="public posts"),
@@ -60,7 +64,7 @@ urlpatterns = [
     path('home/', react),  # react app
     path('profile/edit/', EditProfile.as_view(), name="edit profile"),
     path('profile/', LocalProfileEdit, name="my profile"),  # profile edit page (only for our local users)
-    path('api/utils/profile/', AnyProfileView.as_view(), name="any profile"), # profile view page (for any user on our connected teams)
+
 
     # admin, auth, api-schema, and api docs
     # Django admin site

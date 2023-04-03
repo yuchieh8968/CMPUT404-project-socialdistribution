@@ -93,6 +93,8 @@ def LocalProfileEdit(request):
     # numfollowing = len(Follow.objects.filter(actor=author.build_author_id()))
     return render(request, 'profile-edit.html', {"author": author, "numposts": numposts, "numfollowers" : numfollowers})#, "numfollowing": numfollowing })
 
+from rest_framework.parsers import FormParser
+from rest_framework.decorators import parser_classes
 class AnyProfileView(GenericAPIView):
     """
     Used to render an author's profile, except the profile can be from any of our connected teams.
@@ -102,6 +104,7 @@ class AnyProfileView(GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = AnyProfileSerializer
     pagination_class = None
+    parser_classes = [FormParser]
 
     def post(self, request: Request):
 

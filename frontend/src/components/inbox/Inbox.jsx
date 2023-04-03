@@ -18,10 +18,10 @@ export default function InboxNotificationDropdown() {
       const fetchData = async () => {
           try {
             // UPDATE ***** get rid of hardcode
-              const response = await fetch('http://127.0.0.1:8000/api/authors/dc17b761-567e-4202-b79d-919ede05e420/inbox', {
+              const response = await fetch('https://social-distro.herokuapp.com/api/authors/dc17b761-567e-4202-b79d-919ede05e420/inbox', {
                   method: 'GET',
                   headers: {
-                      'Authorization': 'Basic ' + btoa('test_user:password')
+                      'Authorization': 'Basic ' + btoa('team24:team24')
                   }
               });
               const data = await response.json();

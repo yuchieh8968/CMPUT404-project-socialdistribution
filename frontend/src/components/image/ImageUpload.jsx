@@ -11,26 +11,26 @@ export default function ImageUploader(props) {
 
     const createPost = async () => {
         try {
-          const currentAuthorResponse = await fetch('http://127.0.0.1:8000/api/utils/me/', {
+          const currentAuthorResponse = await fetch('https://social-distro.herokuapp.com/api/utils/me/', {
             method: 'GET',
             headers: {
-                'Authorization': 'Basic ' + btoa('test_user:password')
+                'Authorization': 'Basic ' + btoa('team24:team24')
             }
             });
 
           const currentAuthor = await currentAuthorResponse.json();
-          const url = 'http://127.0.0.1:8000/api/authors/'+ currentAuthor.id +'/posts/'
+          const url = 'https://social-distro.herokuapp.com/api/authors/'+ currentAuthor.id +'/posts/'
           const data = {
             title: props.title,
             description: props.description,
-            contentType: "application/base64",
+            contentType: "image/jpeg;base64",
             content: postImage.split(',')[1],
             categories: props.tags,
             visibility: props.visibility,
             unlisted: true
           };
           await axios.post(url, data, { headers: {
-            'Authorization': 'Basic ' + btoa('test_user:password'),}
+            'Authorization': 'Basic ' + btoa('team24:team24'),}
           })
         } catch (error) {
         console.log(error.message);

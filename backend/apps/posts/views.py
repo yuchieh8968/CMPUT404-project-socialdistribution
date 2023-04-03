@@ -36,6 +36,7 @@ from apps.followers.models import Follow
 
 
 
+
 # Create your views here.
 
 
@@ -49,6 +50,15 @@ from apps.followers.models import Follow
 #     - caching or storing to reduce the amount of calls
 #     - putting posts by authors we follow to the top
 #     """
+
+def ViewPost(request, post_full_id):
+    host = urlparse(post_full_id).hostname
+    
+    r = requests.get(post_full_id, auth=(settings.CONNECTED_TEAMS[host]["username"], settings.CONNECTED_TEAMS[host]["password"]))
+    post = r.json()
+    context = {'post': post}
+    return render(request, 'view-post.html', context)
+
 
 
 
