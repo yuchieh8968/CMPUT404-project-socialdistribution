@@ -10,7 +10,7 @@ from rest_framework.authentication import SessionAuthentication, BasicAuthentica
 from rest_framework.permissions import IsAuthenticated
 from django.urls import reverse_lazy
 from django.views import generic
-from .admin import CustomUserCreationForm
+from .admin import CustomUserCreationForm, CustomUserChangeForm
 # from apps.authors.remoteauth import RemoteAuth
 from django.shortcuts import render
 import requests
@@ -19,6 +19,8 @@ from urllib.parse import urlparse
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import redirect
+from apps.posts.models import Post
+from apps.followers.models import Follow
 
 
 # Create your views here.
@@ -27,8 +29,37 @@ from django.shortcuts import redirect
 #https://learndjango.com/tutorials/django-signup-tutorial
 class SignUp(generic.CreateView):
     form_class = CustomUserCreationForm
-    success_url = "/login"
+    success_url = "/login/"
     template_name = "signup.html"
+
+class EditProfile(generic.UpdateView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = AuthorSerializer
+    pagination_class = None
+
+    # form_class = CustomUserChangeForm
+
+    success_url = "/profile/"
+    template_name = "edit-profile.html"
+    model = Author
+
+    fields = ['displayName', 'github', 'profileImage']
+
+    def get_object(self):
+        author = self.request.user
+        if not author.is_active:
+            return redirect(reverse_lazy('login'))
+        return author
+
+    # def dispatch(self, request, *args, **kwargs):
+    #     author = request.user
+    #     if not author.is_active:
+    #         return redirect(reverse_lazy('login'))
+    #     self.object = author
+    #     return super().dispatch(request, *args, **kwargs)
+
+    
 
 
 class MyInfo(GenericAPIView):
@@ -46,7 +77,10 @@ def LocalProfileEdit(request):
     author = request.user
     if not author.is_active:
         return redirect(reverse_lazy('login'))
-    return render(request, 'profile-edit.html', {"author": author})
+    numposts = len(Post.objects.filter(author=author))
+    numfollowers =  len(Follow.objects.filter(object=author))
+    # numfollowing = len(Follow.objects.filter(actor=author.build_author_id()))
+    return render(request, 'profile-edit.html', {"author": author, "numposts": numposts, "numfollowers" : numfollowers})#, "numfollowing": numfollowing })
 
 class AnyProfileView(GenericAPIView):
     """
@@ -74,6 +108,23 @@ class AnyProfileView(GenericAPIView):
             password = settings.CONNECTED_TEAMS[host]["password"]
             r : res = requests.get(url, auth=(user, password))
             context = r.json()
+
+            # can we get numposts and numfollowers here?
+
+            print(context["url"])
+            r_posts : res = requests.get(context["url"] + '/posts/', auth=(user, password))
+            if r_posts.status_code == 200 and 'count' in r_posts.json().keys():
+                context["numposts"] = r_posts.json()['count']
+            else:
+                context["numposts"] = "?"
+
+
+            r_followers : res = requests.get(context["url"] + '/followers/', auth=(user, password))
+            if r_followers.status_code == 200 and 'count' in r_followers.json().keys():
+                context["numfollowers"] = r_followers.json()['count']
+            else:
+                context["numfollowers"] = "?"
+
             return render(request, 'profile-view.html', context)
         else:
             raise Http404

@@ -8,6 +8,14 @@
 </head>
 <body class="bg-gray-200">
   <div class="mt-6 shadow-shadow-500 shadow-3xl rounded-xl relative mx-auto flex h-full w-full max-w-[550px] flex-col items-center bg-white bg-cover bg-clip-border p-[16px]">
+    <div class="">
+      <a href="/home/">
+      <svg class="h-8 w-8 text-red-500"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+      </svg>
+    </a>
+    </div>
+    
     <div class="relative mt-1 flex h-32 w-full justify-center rounded-xl bg-cover" style='background-image: url("https://i.ibb.co/FWggPq1/banner.png");'>
       <div class="absolute -bottom-12 flex h-[88px] w-[88px] items-center justify-center rounded-full border-[4px] border-white bg-pink-400">
         {% if profileImage %}
@@ -29,17 +37,17 @@
     </div>
     <div class="mt-6 mb-3 flex gap-4 md:!gap-14">
       <div class="flex flex-col items-center justify-center">
-        <h3 class="text-blue-950 text-2xl font-bold">17</h3>
+        <h3 class="text-blue-950 text-2xl font-bold">{{ numposts }}</h3>
         <p class="text-blue-950 text-sm font-normal">Posts</p>
       </div>
       <div class="flex flex-col items-center justify-center">
-        <h3 class="text-blue-950 text-2xl font-bold">9.7K</h3>
+        <h3 class="text-blue-950 text-2xl font-bold">{{ numfollowers }}</h3>
         <p class="text-blue-950 text-sm font-normal">Followers</p>
       </div>
-      <div class="flex flex-col items-center justify-center">
+      <!-- <div class="flex flex-col items-center justify-center">
         <h3 class="text-blue-950 text-2xl font-bold">434</h3>
         <p class="text-blue-950 text-sm font-normal">Following</p>
-      </div>
+      </div> -->
     </div>
     {% if github %}
     <div class="mt-5 flex flex-col items-center">

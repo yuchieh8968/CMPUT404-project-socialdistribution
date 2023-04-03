@@ -608,6 +608,10 @@ video {
   height: 1.75rem;
 }
 
+.h-8 {
+  height: 2rem;
+}
+
 .h-\[88px\] {
   height: 88px;
 }
@@ -618,6 +622,10 @@ video {
 
 .w-7 {
   width: 1.75rem;
+}
+
+.w-8 {
+  width: 2rem;
 }
 
 .w-\[88px\] {
@@ -700,6 +708,10 @@ video {
   padding: 16px;
 }
 
+.pt-5 {
+  padding-top: 1.25rem;
+}
+
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
@@ -726,6 +738,11 @@ video {
 
 .font-normal {
   font-weight: 400;
+}
+
+.text-red-500 {
+  --tw-text-opacity: 1;
+  color: rgb(239 68 68 / var(--tw-text-opacity));
 }
 
 .outline {
