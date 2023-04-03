@@ -9,39 +9,34 @@ export default function Post({key, obj}) {
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(data);
   
-    const fetchData = async () => {
-        try {
+    useEffect(() => {
+      if (data === null) {
+        const fetchData = async () => {
+          try {
             const response = await fetch('http://127.0.0.1:8000/api/authors/26e38fc5-abf2-468a-ad9b-e91699dc89dc/posts', {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Basic ' + btoa('jeff:pw')
-                }
+              method: 'GET',
+              headers: {
+                'Authorization': 'Basic ' + btoa('jeff:pw')
+              }
             });
             const data = await response.json();
             setData(data);
             // fetch the author data
             const authorResponse = await fetch(data.author, {
-                method: 'GET',
-                headers: {
-                    'Authorization': 'Basic ' + btoa('jeff:pw')
-                }
+              method: 'GET',
+              headers: {
+                'Authorization': 'Basic ' + btoa('jeff:pw')
+              }
             });
             const authorData = await authorResponse.json();
             setAuthorData(authorData);
-        } catch (error) {
+          } catch (error) {
             console.error(error);
-        }
-    };
-
-    useEffect(() => {
-        const interval = setInterval(() => {
-            fetchData();
-        }, 1000); 
-
-        return () => clearInterval(interval);
-    }, [fetchData]);
-
-    console.log(data);
+          }
+        };
+        fetchData();
+      }
+    }, [data]);
 
     return (
         <div class="row">
