@@ -21,7 +21,8 @@ from django.http import Http404
 from django.shortcuts import redirect
 from apps.posts.models import Post
 from apps.followers.models import Follow
-
+import json
+import ast
 
 # Create your views here.
 
@@ -93,7 +94,7 @@ def LocalProfileEdit(request):
     # numfollowing = len(Follow.objects.filter(actor=author.build_author_id()))
     return render(request, 'profile-edit.html', {"author": author, "numposts": numposts, "numfollowers" : numfollowers})#, "numfollowing": numfollowing })
 
-from rest_framework.parsers import FormParser, JSONParser
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.decorators import parser_classes
 class AnyProfileView(GenericAPIView):
     """
@@ -104,13 +105,20 @@ class AnyProfileView(GenericAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = AnyProfileSerializer
     pagination_class = None
-    parser_classes = [FormParser]
+    parser_classes = [FormParser, JSONParser, MultiPartParser]
 
     def post(self, request: Request):
 
         serializer = AnyProfileSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
+        if not serializer.is_valid():
+            print("here")
+            print(request.data["url"])
+            d = ast.literal_eval(request.data["url"])
+            print(d["id"])
+            print(type(d))
+            serializer = AnyProfileSerializer(data={"url": d["id"]})
+            serializer.is_valid(raise_exception=True)
+        print("here2")
         url = serializer.validated_data["url"]
         if not url.endswith('/'):
             url = url + '/'
