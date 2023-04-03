@@ -52,7 +52,9 @@ export default function ImageUploader(props) {
     const handleFileUpload = async (e) => {
         const file = e.target.files[0];
         const base64 = await convertToBase64(file);
-        setPostImage(base64);
+        //https://stackoverflow.com/questions/24289182/how-to-strip-type-from-javascript-filereader-base64-string
+        const base64result = base64.split(',')[1];
+        setPostImage(base64result);
     };
 
     return (
