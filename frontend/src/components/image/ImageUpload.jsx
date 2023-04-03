@@ -9,22 +9,29 @@ export default function ImageUploader(props) {
     //URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/image
 
 
-    const url = "http://127.0.0.1:8000/api/authors/32e4e404-cb69-4f2f-9bfc-1bbdbc318bc7/posts/"
-    const data = {
-      title: props.title,
-      description: props.description,
-      contentType: "application/base64",
-      content: postImage.split(',')[1],
-      categories: props.tags,
-      visibility: props.visibility,
-      unlisted: true
-    };
-
     const createPost = async () => {
         try {
-        await axios.post(url, data, { headers: {
-          'Authorization': 'Basic ' + btoa('test_user:password'),}
-        })
+          const currentAuthorResponse = await fetch('http://127.0.0.1:8000/api/utils/me/', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Basic ' + btoa('test_user:password')
+            }
+            });
+
+          const currentAuthor = await currentAuthorResponse.json();
+          const url = 'http://127.0.0.1:8000/api/authors/'+ currentAuthor.id +'/posts/'
+          const data = {
+            title: props.title,
+            description: props.description,
+            contentType: "application/base64",
+            content: postImage.split(',')[1],
+            categories: props.tags,
+            visibility: props.visibility,
+            unlisted: true
+          };
+          await axios.post(url, data, { headers: {
+            'Authorization': 'Basic ' + btoa('test_user:password'),}
+          })
         } catch (error) {
         console.log(error.message);
         }

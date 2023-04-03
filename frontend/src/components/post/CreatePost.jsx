@@ -66,8 +66,18 @@ export default function CreatePost() {
     };
 
     // TO DO AXIOS API CALL
+
     async function handleSubmit() {
-        const url = 'http://127.0.0.1:8000/api/authors/32e4e404-cb69-4f2f-9bfc-1bbdbc318bc7/posts/'
+        const currentAuthorResponse = await fetch('http://127.0.0.1:8000/api/utils/me/', {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Basic ' + btoa('test_user:password')
+        }
+        });
+
+        const currentAuthor = await currentAuthorResponse.json();
+
+        const url = 'http://127.0.0.1:8000/api/authors/'+ currentAuthor.id +'/posts/'
         const data = {
             title: title,
             description: description,
