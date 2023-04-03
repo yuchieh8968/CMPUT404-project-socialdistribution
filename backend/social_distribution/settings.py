@@ -70,6 +70,9 @@ INSTALLED_APPS = [
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'social_distribution.pagination.CustomPagination',
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ]
 }
 
 LOGIN_REDIRECT_URL = "/api/docs/"

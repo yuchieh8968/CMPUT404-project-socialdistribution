@@ -46,10 +46,10 @@ const Tags = ({ data, handleDelete }) => {
 };
 
 export default function CreatePost() {
-    const [title, setTitle] = useState('');
-    const [description, setDescription] = useState('');
+    const [title, setTitle] = useState("");
+    const [description, setDescription] = useState("");
     const [contentType, setContentType] = useState('text/plain');
-    const [content, setContent] = useState('');
+    const [content, setContent] = useState("");
     const [visibility, setVisibility] = React.useState("PUBLIC");
     const [open, setOpen] = React.useState(false);
     const [tags, SetTags] = useState([]);
@@ -67,20 +67,27 @@ export default function CreatePost() {
 
     // TO DO AXIOS API CALL
     async function handleSubmit() {
-        const res = await fetch("http://127.0.0.1:8000/api/authors/32e4e404-cb69-4f2f-9bfc-1bbdbc318bc7/posts/", {
-            method: 'post',
+        const url = 'http://127.0.0.1:8000/api/authors/32e4e404-cb69-4f2f-9bfc-1bbdbc318bc7/posts/'
+        const data = {
+            title: title,
+            description: description,
+            contentType: contentType,
+            content: content,
+            categories: tags,
+            visibility: visibility,
+        };
+        axios
+        .post(url, data, {
             headers: {
                 'Authorization': 'Basic ' + btoa('test_user:password'),
-            },
-            data: {
-                title: title,
-                description: description,
-                contentType: contentType,
-                content: content,
-                categories: tags,
-                visibility: visibility,
             }
-        });
+        }).then((response) => {
+            console.log(response);
+        }).catch((error) => {
+        if( error.response ){
+            console.log(error.response.data); // => the response payload
+        }
+    });
     }
 
     const handleTitleInput = event => {
