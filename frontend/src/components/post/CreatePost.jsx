@@ -92,7 +92,7 @@ export default function CreatePost() {
         }
         });
 
-        const currentAuthor = await currentAuthorResponse.json()["id"];
+        const currentAuthor = await currentAuthorResponse.json();
         // console.log(currentAuthor)
 
         const url = '/api/authors/'+ currentAuthor["id"] +'/posts/'

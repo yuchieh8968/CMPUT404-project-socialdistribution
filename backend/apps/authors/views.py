@@ -93,7 +93,7 @@ def LocalProfileEdit(request):
     # numfollowing = len(Follow.objects.filter(actor=author.build_author_id()))
     return render(request, 'profile-edit.html', {"author": author, "numposts": numposts, "numfollowers" : numfollowers})#, "numfollowing": numfollowing })
 
-from rest_framework.parsers import FormParser
+from rest_framework.parsers import FormParser, JSONParser
 from rest_framework.decorators import parser_classes
 class AnyProfileView(GenericAPIView):
     """
