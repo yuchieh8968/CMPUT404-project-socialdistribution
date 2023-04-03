@@ -109,16 +109,16 @@ export default function InboxNotificationDropdown() {
                   // Update ***** multple obj
                   <Link to={item.object}>
                     <MenuItem key={item.object}>
-                      {item.type === 'Post' && (
+                      {item.type === 'post' && (
                         <Link to={item.object}>You have received a new post</Link>
                       )}
-                      {item.type === 'Comment' && (
+                      {item.type === 'comment' && (
                         <Link to={item.object}>You have recieved a new comment</Link>
                       )}
-                      {item.type === 'Like' && (
+                      {item.type === 'like' && (
                         <Link to={item.object}>You have recieved a new like</Link>
                       )}
-                      {item.type === 'FollowRequest' && (
+                      {item.type === 'follow' && (
                         <Link to={item.object}>You have a new follow request</Link>
                       )}
                     </MenuItem>
