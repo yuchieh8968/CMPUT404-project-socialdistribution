@@ -61,8 +61,9 @@ class CommentView(GenericAPIView):
         URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
         POST [local] if you post an object of “type”:”comment”, it will add your comment to the post whose id is POST_ID
         """
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        pass
+#         serializer = CommentSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
