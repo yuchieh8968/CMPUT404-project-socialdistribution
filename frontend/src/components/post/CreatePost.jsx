@@ -231,7 +231,7 @@ export default function CreatePost() {
                                 <ToggleButton value="PRIVATE">Private</ToggleButton>
                             </ToggleButtonGroup>
 
-                            <ImageUploader />
+                            <ImageUploader title={title} description={description} content={content} tags={tags} visibility={visibility} />
 
                             <Box  sx={{paddingTop: 2, paddingBottom:2}}>
                                 <Button type="button" sx={{marginRight: 2}} onClick={handleSubmit} variant="contained" endIcon={<PublishIcon />}>
