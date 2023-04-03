@@ -110,7 +110,7 @@ export default function InboxNotificationDropdown() {
                   <Link to={item.object}>
                     <MenuItem key={item.object}>
                       {item.type === 'post' && (
-                        <Link to={item.object}>You have received a new post</Link>
+                        <Link to={"https://social-distro.herokuapp.com/view/"+item.object}>You have received a new post</Link>
                       )}
                       {item.type === 'comment' && (
                         <Link to={item.object}>You have recieved a new comment</Link>
