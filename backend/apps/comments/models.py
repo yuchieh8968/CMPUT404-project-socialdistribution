@@ -21,5 +21,5 @@ class Comment(models.Model):
     contentType = models.CharField(max_length=30, choices=contentTypeChoices, default=PLAIN, blank=False, null=False)
     published = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return str(self.comment)
+    # def __str__(self):
+    #     return str(self.comment)

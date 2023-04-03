@@ -25,6 +25,7 @@ from apps.followers.views import FollowerCreateView, FollowerListCreateView
 from django.contrib.auth import views
 from apps.likes.views import Get_Like_For_Post, Get_Like_For_Comment, Get_Liked
 from apps.docs.views import react
+from apps.comments.views import CommentView
 
 
 urlpatterns = [
@@ -36,7 +37,7 @@ urlpatterns = [
 
     # sign-up
     path('signup/', SignUp.as_view(), name="sign-up"),
-    
+
     # get my id
     path('api/utils/me/', MyInfo.as_view(), name="my info"),
 
@@ -59,8 +60,10 @@ urlpatterns = [
 
     path('home/', react),  # react app
     path('profile/edit/', EditProfile.as_view(), name="edit profile"),
-    path('profile/', LocalProfileEdit, name="my profile"),  # profile edit page (only for our local users)
-    path('api/utils/profile/', AnyProfileView.as_view(), name="any profile"), # profile view page (for any user on our connected teams)
+    # profile edit page (only for our local users)
+    path('profile/', LocalProfileEdit, name="my profile"),
+    # profile view page (for any user on our connected teams)
+    path('api/utils/profile/', AnyProfileView.as_view(), name="any profile"),
 
     # admin, auth, api-schema, and api docs
     # Django admin site
@@ -81,15 +84,19 @@ urlpatterns = [
     path('remote-post/', GuiPost, name="Gui Post"),
 
     # # followers
-    path('api/authors/<uuid:author_id>/followers/<path:foreign_author_id>/', FollowerCreateView.as_view(), name="Followers"),             # Specific follower of author_id
-    path('api/authors/<str:author_id>/followers/', FollowerListCreateView.as_view(), name="Follower of author_id"),                               # Author_id's followers
+    path('api/authors/<uuid:author_id>/followers/<path:foreign_author_id>/',
+         FollowerCreateView.as_view(), name="Followers"),             # Specific follower of author_id
+    path('api/authors/<str:author_id>/followers/', FollowerListCreateView.as_view(),
+         name="Follower of author_id"),                               # Author_id's followers
 
     # # posts
-    path('api/authors/<str:author_id>/posts/<str:post_id>/image/', ImagePost.as_view(), name="Image post"),                                  # Image post
+    path('api/authors/<str:author_id>/posts/<str:post_id>/image/', ImagePost.as_view(),
+         name="Image post"),                                  # Image post
 
 
     # # comments
-    # path('api/authors/<str:author_id>/posts/<str:post_id>/comments', XXX, name="Comments on post"),                         # Comments on post
+    path('api/authors/<str:author_id>/posts/<str:post_id>/comments', CommentView.as_view(),
+         name="Comments on post"),                         # Comments on post
 
     # # likes
     # Send like to author
