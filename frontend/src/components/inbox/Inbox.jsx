@@ -17,11 +17,22 @@ export default function InboxNotificationDropdown() {
   useEffect(() => {
       const fetchData = async () => {
           try {
-            // UPDATE ***** get rid of hardcode
-              const response = await fetch('http://127.0.0.1:8000/api/authors/dc17b761-567e-4202-b79d-919ede05e420/inbox', {
+                // fetch the current user's UUID
+                const currentauthorResponse = await fetch ('/api/utils/me/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('team24:team24')
+                    }
+                });
+
+                // create url to current user'
+                const currentAuthor = await currentauthorResponse.json();
+                
+                const currentAuthorURL = "/api/authors/"+currentAuthor+"/inbox"
+                const response = await fetch(currentAuthorURL, {
                   method: 'GET',
                   headers: {
-                      'Authorization': 'Basic ' + btoa('test_user:password')
+                      'Authorization': 'Basic ' + btoa('team24:team24')
                   }
               });
               const data = await response.json();

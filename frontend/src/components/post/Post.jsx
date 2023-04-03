@@ -13,10 +13,10 @@ export default function Post({key, obj}) {
         const fetchData = async () => {
             try {
                 // fetch the current user's UUID
-                const currentauthorResponse = await fetch ('http://127.0.0.1:8000/api/utils/me/', {
+                const currentauthorResponse = await fetch ('/api/utils/me/', {
                     method: 'GET',
                     headers: {
-                        'Authorization': 'Basic ' + btoa('jeff:pw')
+                        'Authorization': 'Basic ' + btoa('team24:team24')
                     }
                 });
 
@@ -24,13 +24,13 @@ export default function Post({key, obj}) {
                 const currentAuthor = await currentauthorResponse.json();
                 
                 // const currentAuthorPostURL = "http://127.0.0.1:8000/api/authors/"+currentAuthor+"/posts"
-                const currentAuthorPostURL = 'http://127.0.0.1:8000/api/utils/posts/'
+                const currentAuthorPostURL = '/api/utils/posts/'
 
                 // this gets the current logged in author's posts
                 const response = await fetch(data === null ? currentAuthorPostURL : data.next, {
                     method: 'GET',
                     headers: {
-                        'Authorization': 'Basic ' + btoa('jeff:pw')
+                        'Authorization': 'Basic ' + btoa('team24:team24')
                     }
                 });
                 const newData = await response.json();
