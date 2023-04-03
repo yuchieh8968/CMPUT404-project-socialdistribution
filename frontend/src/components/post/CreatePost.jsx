@@ -84,7 +84,7 @@ export default function CreatePost() {
     
     async function handleSubmit() {
         const csrftoken = getCookie('csrftoken');
-        const currentAuthorResponse = await fetch('https://social-distro.herokuapp.com/api/utils/me/', {
+        const currentAuthorResponse = await fetch('/api/utils/me/', {
         method: 'GET',
         headers: {
             'Authorization': 'Basic ' + btoa('team24:team24'),
@@ -92,10 +92,10 @@ export default function CreatePost() {
         }
         });
 
-        const currentAuthor = await currentAuthorResponse.json();
-        console.log(currentAuthor)
+        const currentAuthor = await currentAuthorResponse.json()["id"];
+        // console.log(currentAuthor)
 
-        const url = 'https://social-distro.herokuapp.com/api/authors/'+ currentAuthor.id +'/posts/'
+        const url = '/api/authors/'+ currentAuthor["id"] +'/posts/'
         const data = {
             title: title,
             description: description,

@@ -37,7 +37,7 @@ export default function InboxNotificationDropdown() {
             // UPDATE ***** get rid of hardcode
             //   const response = await fetch('https://social-distro.herokuapp.com/api/authors/dc17b761-567e-4202-b79d-919ede05e420/inbox', {
             // fetch the current user's UUID
-            const currentauthorResponse = await fetch ('https://social-distro.herokuapp.com/api/utils/me/', {
+            const currentauthorResponse = await fetch ('/api/utils/me/', {
                 method: 'GET',
                 headers: {
                     'Authorization': 'Basic ' + btoa('team24:team24'),
@@ -47,8 +47,9 @@ export default function InboxNotificationDropdown() {
 
             // create url to current user'
             const currentAuthor = await currentauthorResponse.json();
+            console.log(currentAuthor["id"])
 
-            const currentAuthorURL = "/api/authors/"+currentAuthor+"/inbox"
+            const currentAuthorURL = "/api/authors/"+currentAuthor["id"]+"/inbox"
             const response = await fetch(currentAuthorURL, {
                   method: 'GET',
                   headers: {
