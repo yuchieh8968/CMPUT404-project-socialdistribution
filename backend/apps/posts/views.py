@@ -31,10 +31,27 @@ from rest_framework.schemas.openapi import AutoSchema
 from django.conf import settings
 import base64
 from django.http import HttpResponse
+from urllib.parse import urlparse
+from apps.followers.models import Follow
 
 
 
 # Create your views here.
+
+
+# class BuildStream(GenericAPIView):
+#     """
+#     This will build the stream, consisting of all public posts.
+
+#     POST request arguement: local author id or url?
+
+#     Consider:
+#     - caching or storing to reduce the amount of calls
+#     - putting posts by authors we follow to the top
+#     """
+
+
+
 
 # def GuiPost(request, author_text, post_text):
 def GuiPost(request):

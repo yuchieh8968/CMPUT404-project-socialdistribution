@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path, register_converter
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
-from apps.authors.views import Author_All, Author_Individual, SignUp, MyInfo, LocalProfileEdit, AnyProfileView
+from apps.authors.views import Author_All, Author_Individual, SignUp, MyInfo, LocalProfileEdit, AnyProfileView, EditProfile
 from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost, ImagePost
 from django.views.generic.base import RedirectView
 from apps.inbox.views import InboxListCreateView
@@ -64,6 +64,7 @@ urlpatterns = [
     path('', RedirectView.as_view(url='api/docs/', permanent=False), name='index'),
 
     path('home/', react),  # react app
+    path('profile/edit/', EditProfile.as_view(), name="edit profile"),
     path('profile/', LocalProfileEdit, name="my profile"),  # profile edit page (only for our local users)
     path('api/utils/profile/', AnyProfileView.as_view(), name="any profile"), # profile view page (for any user on our connected teams)
 
@@ -87,7 +88,7 @@ urlpatterns = [
 
     # # followers
     path('api/authors/<uuid:author_id>/followers/<path:foreign_author_id>/', FollowerCreateView.as_view(), name="Followers"),             # Specific follower of author_id
-    path('api/authors/<str:author_id>/followers', FollowerListCreateView.as_view(), name="Follower of author_id"),                               # Author_id's followers
+    path('api/authors/<str:author_id>/followers/', FollowerListCreateView.as_view(), name="Follower of author_id"),                               # Author_id's followers
 
     # # posts
     path('api/authors/<str:author_id>/posts/<str:post_id>/image/', ImagePost.as_view(), name="Image post"),                                  # Image post

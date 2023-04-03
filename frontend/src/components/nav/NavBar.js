@@ -15,6 +15,7 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import Paper from '@mui/material/Paper';
 import CreatePost from "../post/CreatePost";
 import InboxView from "../inbox/Inbox";
+import PersonIcon from '@mui/icons-material/Person';
 
 
 
@@ -115,14 +116,15 @@ export default function NavBar() {
                             {/* Inbox view here */}
                             <InboxView/>
 
-                            <IconButton size="large" aria-label="show new private post" color="inherit">
+                            {/* <IconButton size="large" aria-label="show new private post" color="inherit">
                                 <Badge badgeContent={postNotification} color="error">
                                     <MailIcon />
                                 </Badge>
-                            </IconButton>
+                            </IconButton> */}
 
                             <CreatePost/>
 
+                            {/* todo: make icon load your profile icon */}
                             <IconButton
                                 size="large"
                                 edge="end"
@@ -132,7 +134,8 @@ export default function NavBar() {
                                 onClick={handleProfileMenuOpen}
                                 color="inherit"
                                 >
-                                <Avatar sx={{bgcolor: "#CC2614"}}> N </Avatar>
+                                {/* <Avatar src="" sx={{bgcolor: "#CC2614"}}> <PersonIcon/> </Avatar> */}
+                                <Avatar sx={{bgcolor: "#CC2614"}}> <PersonIcon/> </Avatar>
                             </IconButton>
                         </Box>
                     </Toolbar>
