@@ -18,10 +18,10 @@ export default function InboxNotificationDropdown() {
       const fetchData = async () => {
           try {
             // UPDATE ***** get rid of hardcode
-              const response = await fetch('http://127.0.0.1:8000/api/authors/2274ca0c-f481-4652-bee1-2d3f4ae9c2cd/inbox', {
+              const response = await fetch('http://127.0.0.1:8000/api/authors/dc17b761-567e-4202-b79d-919ede05e420/inbox', {
                   method: 'GET',
                   headers: {
-                      'Authorization': 'Basic ' + btoa('jeff:password')
+                      'Authorization': 'Basic ' + btoa('jeff:pw')
                   }
               });
               const data = await response.json();
@@ -41,7 +41,6 @@ export default function InboxNotificationDropdown() {
       setAnchorEl(null);
   };
 
-  console.log(data);
 
   const anchorRef = useRef(null);
 
