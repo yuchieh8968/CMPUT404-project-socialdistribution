@@ -1,7 +1,6 @@
 .row {
     display: flex;
     flex: 1;
-    min-height: 100vh;
     flex-wrap: wrap;
     justify-content: center;
 }

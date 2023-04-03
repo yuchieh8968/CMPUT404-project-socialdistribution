@@ -17,8 +17,8 @@ from django.contrib import admin
 from django.urls import include, path, register_converter
 from django.views.generic import TemplateView
 from rest_framework.schemas import get_schema_view
-from apps.authors.views import Author_All, Author_Individual, SignUp, MyInfo, LocalProfileEdit, AnyProfileView
-from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost, ImagePost
+from apps.authors.views import Author_All, Author_Individual, SignUp, MyInfo, LocalProfileEdit, AnyProfileView, EditProfile, Test
+from apps.posts.views import Post_Individual, All_Posts_By_Author, GuiPost, ImagePost, Post_All_Public
 from django.views.generic.base import RedirectView
 from apps.inbox.views import InboxListCreateView
 from apps.followers.views import FollowerCreateView, FollowerListCreateView
@@ -26,19 +26,13 @@ from django.contrib.auth import views
 from apps.likes.views import Get_Like_For_Post, Get_Like_For_Comment, Get_Liked
 from apps.docs.views import react
 
-# class AuthorIDConverter:
-#       regex = r".+?(?=\/posts)"
-
-#       def to_python(self, value: str) -> str:
-#           return value
-
-#       def to_url(self, value: str) -> str:
-#           return value
-
-# register_converter(AuthorIDConverter, "author_id_path")
-
 
 urlpatterns = [
+
+    # path('test/', Test, name="TEST"),
+
+    # all public and not unlisted posts
+    path('api/utils/posts/', Post_All_Public.as_view(), name="public posts"),
 
     # sign-up
     path('signup/', SignUp.as_view(), name="sign-up"),
@@ -64,6 +58,7 @@ urlpatterns = [
     path('', RedirectView.as_view(url='api/docs/', permanent=False), name='index'),
 
     path('home/', react),  # react app
+    path('profile/edit/', EditProfile.as_view(), name="edit profile"),
     path('profile/', LocalProfileEdit, name="my profile"),  # profile edit page (only for our local users)
     path('api/utils/profile/', AnyProfileView.as_view(), name="any profile"), # profile view page (for any user on our connected teams)
 
@@ -87,7 +82,7 @@ urlpatterns = [
 
     # # followers
     path('api/authors/<uuid:author_id>/followers/<path:foreign_author_id>/', FollowerCreateView.as_view(), name="Followers"),             # Specific follower of author_id
-    path('api/authors/<str:author_id>/followers', FollowerListCreateView.as_view(), name="Follower of author_id"),                               # Author_id's followers
+    path('api/authors/<str:author_id>/followers/', FollowerListCreateView.as_view(), name="Follower of author_id"),                               # Author_id's followers
 
     # # posts
     path('api/authors/<str:author_id>/posts/<str:post_id>/image/', ImagePost.as_view(), name="Image post"),                                  # Image post
