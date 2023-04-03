@@ -150,6 +150,7 @@ export default function CreatePost() {
                         </Typography>
 
                             <TextField
+                                required
                                 fullWidth
                                 id="title"
                                 label="Post Title"

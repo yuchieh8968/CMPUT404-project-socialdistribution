@@ -14,7 +14,7 @@ export default function ImageUploader(props) {
       title: props.title,
       description: props.description,
       contentType: "application/base64",
-      content: postImage,
+      content: postImage.split(',')[1],
       categories: props.tags,
       visibility: props.visibility,
       unlisted: true
@@ -53,8 +53,8 @@ export default function ImageUploader(props) {
         const file = e.target.files[0];
         const base64 = await convertToBase64(file);
         //https://stackoverflow.com/questions/24289182/how-to-strip-type-from-javascript-filereader-base64-string
-        const base64result = base64.split(',')[1];
-        setPostImage(base64result);
+        //const base64result = base64.split(',')[1];
+        setPostImage(base64);
     };
 
     return (
