@@ -370,25 +370,11 @@ class All_Posts_By_Author(ListAPIView):
 
 # These are extra, for testing purposes only. --------------------------------
 
-class Post_All(APIView):
+class Post_All_Public(ListAPIView):
+    schema = AutoSchema(operation_id_base="PublicPosts")
+    serializer_class = PostSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
 
-    def get(self, request, format=None):
-        """
-        GET all the post from the database. 
-        """
-        posts_query_set = Post.objects.all()
-        serializer = PostSerializer(posts_query_set, many=True)
-        return Response(serializer.data)
-
-
-
-    def post(self, request, format=None):
-        """
-        POST a new post.
-        """
-        serializer = PostSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    def get_queryset(self):
+        return Post.objects.filter(visibility="PUBLIC", unlisted=False)
