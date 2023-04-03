@@ -30,7 +30,10 @@ class InboxListCreateView(ListCreateAPIView):
     permission_classes = [IsAuthenticated]
     def get_queryset(self):
         authorID= self.kwargs.get("author_id","")
+        print("XXX")
         return self.queryset.filter(author_id = authorID).order_by("-created_at")
+
+
     
     def perform_create(self, serializer):
         authorID= self.kwargs.get("author_id","")
@@ -40,5 +43,8 @@ class InboxListCreateView(ListCreateAPIView):
 
 # gets current url. Will use this later to parse out author (current logged in user) url
 def my_view(request):
-    current_url = request.build_absolute_uri()
-    return HttpResponse(current_url)
+    try:
+        current_url = request.build_absolute_uri()
+        return HttpResponse(current_url)
+    except:
+        return None

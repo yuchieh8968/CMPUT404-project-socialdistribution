@@ -17,11 +17,22 @@ export default function InboxNotificationDropdown() {
   useEffect(() => {
       const fetchData = async () => {
           try {
-            // UPDATE ***** get rid of hardcode
-              const response = await fetch('http://127.0.0.1:8000/api/authors/2274ca0c-f481-4652-bee1-2d3f4ae9c2cd/inbox', {
+                // fetch the current user's UUID
+                const currentauthorResponse = await fetch ('/api/utils/me/', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Basic ' + btoa('team24:team24')
+                    }
+                });
+
+                // create url to current user'
+                const currentAuthor = await currentauthorResponse.json();
+                
+                const currentAuthorURL = "/api/authors/"+currentAuthor+"/inbox"
+                const response = await fetch(currentAuthorURL, {
                   method: 'GET',
                   headers: {
-                      'Authorization': 'Basic ' + btoa('jeff:password')
+                      'Authorization': 'Basic ' + btoa('team24:team24')
                   }
               });
               const data = await response.json();
@@ -41,7 +52,6 @@ export default function InboxNotificationDropdown() {
       setAnchorEl(null);
   };
 
-  console.log(data);
 
   const anchorRef = useRef(null);
 
