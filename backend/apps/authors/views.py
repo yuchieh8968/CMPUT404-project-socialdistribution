@@ -25,6 +25,17 @@ from apps.followers.models import Follow
 
 # Create your views here.
 
+def Test(request):
+    author = request.user
+    if not author.is_active:
+        return redirect(reverse_lazy('login'))
+    # numposts = len(Post.objects.filter(author=author))
+    # numfollowers =  len(Follow.objects.filter(object=author))
+    # # numfollowing = len(Follow.objects.filter(actor=author.build_author_id()))
+    context = {}
+    return render(request, 'test.html', context)
+
+
 
 #https://learndjango.com/tutorials/django-signup-tutorial
 class SignUp(generic.CreateView):
