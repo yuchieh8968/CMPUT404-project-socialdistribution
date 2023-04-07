@@ -14,6 +14,8 @@ import CreateIcon from '@mui/icons-material/Create';
 import { Dialog, Icon, IconButton } from "@mui/material";
 import { Cancel, Tag } from "@mui/icons-material";
 import { FormControl, Stack} from "@mui/material";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import axios from "axios";
 
 
@@ -105,7 +107,7 @@ export default function CreatePost() {
         }).catch((error) => {
         if( error.response ){
             console.log(error.response.data);
-
+            setRenderError(true);
         }
     });
     }
