@@ -14,6 +14,8 @@ import CreateIcon from '@mui/icons-material/Create';
 import { Dialog, Icon, IconButton } from "@mui/material";
 import { Cancel, Tag } from "@mui/icons-material";
 import { FormControl, Stack} from "@mui/material";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import axios from "axios";
 
 
@@ -53,6 +55,7 @@ export default function CreatePost() {
     const [visibility, setVisibility] = React.useState("PUBLIC");
     const [open, setOpen] = React.useState(false);
     const [tags, SetTags] = useState([]);
+    const [renderError, setRenderError] = React.useState(false);
     const tagRef = useRef();
 
     const handleDelete = (value) => {
@@ -111,10 +114,19 @@ export default function CreatePost() {
                 'X-CSRFToken': csrftoken,
             }
         }).then((response) => {
-            console.log(response);
+            if (response.status == 200) {
+                setTitle("");
+                setDescription("");
+                setContentType('text/plain');
+                setContent("");
+                setVisibility("PUBLIC");
+                SetTags([]);
+                window.location.reload();
+            }
         }).catch((error) => {
         if( error.response ){
-            console.log(error.response.data); // => the response payload
+            console.log(error.response.data);
+            setRenderError(true);
         }
     });
     }
@@ -153,10 +165,19 @@ export default function CreatePost() {
         }
         setTitle("");
         setDescription("");
+        setContentType('text/plain');
         setContent("");
+        setVisibility("PUBLIC");
+        SetTags([]);
         setOpen(false);
     };
 
+    const handleErrorClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+        setRenderError(false);
+    };
 
     return (
         <>
@@ -274,6 +295,11 @@ export default function CreatePost() {
                     </Container>
                 </Dialog>
             </Box>
+            <Snackbar open={renderError} autoHideDuration={6000} onClose={handleErrorClose}>
+                <Alert onClose={handleClose} severity="error" sx={{ width: '100%' }}>
+                    Failed to create a post!
+                </Alert>
+            </Snackbar>
         </>
     );
 }

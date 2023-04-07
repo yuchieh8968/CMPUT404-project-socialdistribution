@@ -13,13 +13,12 @@ class Comment(models.Model):
         (PLAIN, 'text/plain'),
     ]
 
-
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, blank=False, null=False)
-    post = models.ForeignKey(Post, on_delete=models.CASCADE, blank=False, null=False)
-    comment = models.CharField(max_length=280, blank=False, null=False)
-    contentType = models.CharField(max_length=30, choices=contentTypeChoices, default=PLAIN, blank=False, null=False)
+    author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, to_field='id', on_delete=models.CASCADE)
+    comment = models.CharField(max_length=280)
+    contentType = models.CharField(max_length=30, choices=contentTypeChoices, default=PLAIN)
     published = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return str(self.comment)
+    # def __str__(self):
+    #     return str(self.comment)
