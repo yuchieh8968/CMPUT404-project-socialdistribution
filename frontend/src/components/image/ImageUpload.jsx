@@ -25,13 +25,14 @@ export default function ImageUploader(props) {
   }
     const createPost = async () => {
         try {
+          const csrftoken = getCookie('csrftoken');
           const currentAuthorResponse = await fetch('/api/utils/me/', {
             method: 'GET',
             headers: {
-                'Authorization': 'Basic ' + btoa('team24:team24')
+                // 'Authorization': 'Basic ' + btoa('team24:team24'),
+                'X-CSRFToken': csrftoken,
             }
             });
-          const csrftoken = getCookie('csrftoken');
           const currentAuthor = await currentAuthorResponse.json();
           const url = '/api/authors/'+ currentAuthor["id"] +'/posts/'
           const data = {
@@ -44,7 +45,7 @@ export default function ImageUploader(props) {
             unlisted: true
           };
           await axios.post(url, data, { headers: {
-            'Authorization': 'Basic ' + btoa('team24:team24'),
+            // 'Authorization': 'Basic ' + btoa('team24:team24'),
             'X-CSRFToken': csrftoken,}
           })
         } catch (error) {

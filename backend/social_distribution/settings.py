@@ -14,8 +14,8 @@ from pathlib import Path
 
 
 # Change for deployment
-HOST = "http://127.0.0.1:8000"
-# HOST = "https://social-distro.herokuapp.com"
+# HOST = "http://127.0.0.1:8000"
+HOST = "https://social-distro.herokuapp.com"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -37,6 +37,11 @@ CONNECTED_TEAMS = {
     "127.0.0.1" : {"username": "team24", "password": "team24"},
     "social-distro.herokuapp.com" : {"username": "team24", "password": "team24"},
     "sd7-api.herokuapp.com" : {"username": "node01", "password": "P*ssw0rd!"},
+}
+
+OUR_HOSTS = {
+    "127.0.0.1" : {"username": "team24", "password": "team24"},
+    "social-distro.herokuapp.com" : {"username": "team24", "password": "team24"},
 }
 
 APPEND_SLASH = True

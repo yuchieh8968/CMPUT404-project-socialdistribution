@@ -40,7 +40,7 @@ export default function InboxNotificationDropdown() {
             const currentauthorResponse = await fetch ('/api/utils/me/', {
                 method: 'GET',
                 headers: {
-                    'Authorization': 'Basic ' + btoa('team24:team24'),
+                    // 'Authorization': 'Basic ' + btoa('team24:team24'),
                     'X-CSRFToken': csrftoken,
                 }
             });
@@ -53,7 +53,7 @@ export default function InboxNotificationDropdown() {
             const response = await fetch(currentAuthorURL, {
                   method: 'GET',
                   headers: {
-                      'Authorization': 'Basic ' + btoa('team24:team24'),
+                    //   'Authorization': 'Basic ' + btoa('team24:team24'),
                       'X-CSRFToken': csrftoken,
                   }
               });

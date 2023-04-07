@@ -90,7 +90,7 @@ export default function CreatePost() {
         const currentAuthorResponse = await fetch('/api/utils/me/', {
         method: 'GET',
         headers: {
-            'Authorization': 'Basic ' + btoa('team24:team24'),
+            // 'Authorization': 'Basic ' + btoa('team24:team24'),
             'X-CSRFToken': csrftoken,
         }
         });
@@ -110,7 +110,7 @@ export default function CreatePost() {
         axios
         .post(url, data, {
             headers: {
-                'Authorization': 'Basic ' + btoa('team24:team24'),
+                // 'Authorization': 'Basic ' + btoa('team24:team24'),
                 'X-CSRFToken': csrftoken,
             }
         }).then((response) => {
