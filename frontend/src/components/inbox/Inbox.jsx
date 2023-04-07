@@ -17,22 +17,44 @@ export default function InboxNotificationDropdown() {
   useEffect(() => {
       const fetchData = async () => {
           try {
-                // fetch the current user's UUID
-                const currentauthorResponse = await fetch ('/api/utils/me/', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': 'Basic ' + btoa('team24:team24')
-                    }
-                });
 
-                // create url to current user'
-                const currentAuthor = await currentauthorResponse.json();
-                
-                const currentAuthorURL = "/api/authors/"+currentAuthor+"/inbox"
-                const response = await fetch(currentAuthorURL, {
+            function getCookie(name) {
+                let cookieValue = null;
+                if (document.cookie && document.cookie !== '') {
+                    const cookies = document.cookie.split(';');
+                    for (let i = 0; i < cookies.length; i++) {
+                        const cookie = cookies[i].trim();
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            const csrftoken = getCookie('csrftoken');
+            // UPDATE ***** get rid of hardcode
+            //   const response = await fetch('https://social-distro.herokuapp.com/api/authors/dc17b761-567e-4202-b79d-919ede05e420/inbox', {
+            // fetch the current user's UUID
+            const currentauthorResponse = await fetch ('/api/utils/me/', {
+                method: 'GET',
+                headers: {
+                    // 'Authorization': 'Basic ' + btoa('team24:team24'),
+                    'X-CSRFToken': csrftoken,
+                }
+            });
+
+            // create url to current user'
+            const currentAuthor = await currentauthorResponse.json();
+            console.log(currentAuthor["id"])
+
+            const currentAuthorURL = "/api/authors/"+currentAuthor["id"]+"/inbox"
+            const response = await fetch(currentAuthorURL, {
                   method: 'GET',
                   headers: {
-                      'Authorization': 'Basic ' + btoa('team24:team24')
+                    //   'Authorization': 'Basic ' + btoa('team24:team24'),
+                      'X-CSRFToken': csrftoken,
                   }
               });
               const data = await response.json();
@@ -87,16 +109,16 @@ export default function InboxNotificationDropdown() {
                   // Update ***** multple obj
                   <Link to={item.object}>
                     <MenuItem key={item.object}>
-                      {item.type === 'Post' && (
-                        <Link to={item.object}>You have received a new post</Link>
+                      {item.type === 'post' && (
+                        <Link to={"https://social-distro.herokuapp.com/view/"+item.object}>You have received a new post</Link>
                       )}
-                      {item.type === 'Comment' && (
+                      {item.type === 'comment' && (
                         <Link to={item.object}>You have recieved a new comment</Link>
                       )}
-                      {item.type === 'Like' && (
+                      {item.type === 'like' && (
                         <Link to={item.object}>You have recieved a new like</Link>
                       )}
-                      {item.type === 'FollowRequest' && (
+                      {item.type === 'follow' && (
                         <Link to={item.object}>You have a new follow request</Link>
                       )}
                     </MenuItem>

@@ -36,6 +36,7 @@ from apps.followers.models import Follow
 
 
 
+
 # Create your views here.
 
 
@@ -49,6 +50,15 @@ from apps.followers.models import Follow
 #     - caching or storing to reduce the amount of calls
 #     - putting posts by authors we follow to the top
 #     """
+
+def ViewPost(request, post_full_id):
+    host = urlparse(post_full_id).hostname
+    
+    r = requests.get(post_full_id, auth=(settings.CONNECTED_TEAMS[host]["username"], settings.CONNECTED_TEAMS[host]["password"]))
+    post = r.json()
+    context = {'post': post}
+    return render(request, 'view-post.html', context)
+
 
 
 
@@ -305,17 +315,18 @@ class All_Posts_By_Author(ListAPIView):
     schema = AutoSchema(operation_id_base="CreatePost")
 
     def get_queryset(self):
-        return Post.objects.all()
+        author_id = self.kwargs['author_id']
+        return Post.objects.filter(author=author_id)
     
-    def get(self, request, author_id):
+    # def get(self, request, author_id):
         
-        # is_remote = RemoteAuth(request=request)
-        # if not is_remote:
-        #     response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
-        #     response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
-        #     return response
-
-        return super().get(request, author_id=author_id)
+    #     # is_remote = RemoteAuth(request=request)
+    #     # if not is_remote:
+    #     #     response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
+    #     #     response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
+    #     #     return response
+    #     # return Post.objects.filter(author=author_id)
+    #     return super().get(request, post__author=author_id)
 
 
 
@@ -340,7 +351,7 @@ class All_Posts_By_Author(ListAPIView):
         auth = False
         if request.user.is_staff:
             auth = True
-        elif str(request.user) == serializer.validated_data['author'] == author_id:
+        elif str(request.user) == str(serializer.validated_data['author']) == str(author_id):
             auth = True
 
         if not auth:

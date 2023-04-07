@@ -37,6 +37,12 @@ CONNECTED_TEAMS = {
     "127.0.0.1" : {"username": "team24", "password": "team24"},
     "social-distro.herokuapp.com" : {"username": "team24", "password": "team24"},
     "sd7-api.herokuapp.com" : {"username": "node01", "password": "P*ssw0rd!"},
+    "sociallydistributed.herokuapp.com": {"username": "Social_Distro", "password": "SociallyDistributedConnector1"}
+}
+
+OUR_HOSTS = {
+    "127.0.0.1" : {"username": "team24", "password": "team24"},
+    "social-distro.herokuapp.com" : {"username": "team24", "password": "team24"},
 }
 
 APPEND_SLASH = True
