@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from .models import Comment
 from apps.authors.models import Author
 from django.http import Http404
-from .serializers import CommentSerializer
+from .serializers import CommentSerializer, CommentPostSerializer
 from rest_framework import status
 from rest_framework.exceptions import NotAuthenticated, PermissionDenied
 from rest_framework.viewsets import ModelViewSet
@@ -41,7 +41,8 @@ class CommentView(GenericAPIView):
     def get_object(self, author_id, post_id):
         # Filtering the query to get likes
         try:
-            query_obj = Comment.objects.filter(author__id=author_id, post__id = post_id)
+            query_obj = Comment.objects.filter(
+                author__id=author_id, post__id=post_id)
             return query_obj
         except:
             raise Http404
@@ -56,14 +57,15 @@ class CommentView(GenericAPIView):
             "comments": serializer.data
         })
 
-    def post(self, request, author_id, post_id, format=None):
+    def post(self, request, author_id, post_id):
         """
         URL: ://service/authors/{AUTHOR_ID}/posts/{POST_ID}/comments
         POST [local] if you post an object of “type”:”comment”, it will add your comment to the post whose id is POST_ID
         """
-        pass
-#         serializer = CommentSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        request.data['post_id'] = post_id
+        serializer = CommentPostSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

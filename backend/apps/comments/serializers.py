@@ -20,10 +20,19 @@ class CommentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields = ['author', 'comment', 'contentType',
-                  'id', 'type', 'published', 'post']
+        fields = '__all__'
 
         read_only_fields = ['type', 'published']
         extra_kwargs = {
             'post': {'write_only': True}
         }
+
+
+class CommentPostSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'author', 'comment',
+                  'contentType', 'published', 'post']
+
+        read_only_fields = ['published']
