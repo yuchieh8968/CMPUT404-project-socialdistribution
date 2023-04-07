@@ -9,11 +9,17 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import django_on_heroku
 from pathlib import Path
+
+
+# Change for deployment
+HOST = "http://127.0.0.1:8000"
+# HOST = "https://social-distro.herokuapp.com"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+REPO_DIR = Path(__file__).resolve().parent.parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -27,6 +33,25 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+CONNECTED_TEAMS = {
+    "127.0.0.1" : {"username": "team24", "password": "team24"},
+    "social-distro.herokuapp.com" : {"username": "team24", "password": "team24"},
+    "sd7-api.herokuapp.com" : {"username": "node01", "password": "P*ssw0rd!"},
+    "sociallydistributed.herokuapp.com": {"username": "Social_Distro", "password": "SociallyDistributedConnector1"}
+}
+
+OUR_HOSTS = {
+    "127.0.0.1" : {"username": "team24", "password": "team24"},
+    "social-distro.herokuapp.com" : {"username": "team24", "password": "team24"},
+}
+
+APPEND_SLASH = True
+
+# ALLOW REACT
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
 
 # Application definition
 
@@ -38,12 +63,29 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'apps.docs',
-    'apps.posts',
+    # 'guardian',
     'apps.authors',
+    'apps.comments',
+    'apps.docs',
+    'apps.followers',
+    'apps.inbox',
+    'apps.likes',
+    'apps.posts',
+    'corsheaders',
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'social_distribution.pagination.CustomPagination',
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ]
+}
+
+LOGIN_REDIRECT_URL = "/api/docs/"
+LOGOUT_REDIRECT_URL = "/api/docs/"
+
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -51,6 +93,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'social_distribution.urls'
@@ -58,7 +101,7 @@ ROOT_URLCONF = 'social_distribution.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [ BASE_DIR/'build'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -89,6 +132,8 @@ DATABASES = {
 }
 
 
+AUTH_USER_MODEL = 'authors.Author'
+
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
@@ -107,6 +152,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# AUTHENTICATION_BACKENDS = [
+#     'django.contrib.auth.backends.ModelBackend',
+#     'guardian.backends.ObjectPermissionBackend',
+# ]
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
@@ -119,13 +169,26 @@ USE_I18N = True
 
 USE_TZ = True
 
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+            BASE_DIR / 'build/static'
+]
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+django_on_heroku.settings(locals())
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    'https://social-distro.herokuapp.com',
+]

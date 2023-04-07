@@ -1,0 +1,14 @@
+.row {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.post {
+    flex-basis: 70%;
+}
+
+.comment {
+    flex-basis: 30%;
+}

@@ -15,10 +15,9 @@ Including another URLconf
 """
 from django.urls import include, path
 from apps.inbox.views import inbox
+from . import views
 
 
 urlpatterns = [
-    path('<str:author_id>/inbox', inbox, name="Inbox"),
-    path('<str:author_id>/posts/', include('apps.posts.urls')),
-
+    path('<str:author_id>/inbox', views.inbox_data, name="Inbox")
 ]

@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+
+<head>
+<title>View Post</title>
+<link href="{% static 'authors/output.css' %}" rel="stylesheet" />
+<script type="module" src="https://md-block.verou.me/md-block.js"></script>
+</head>
+<body>
+    <div class="">
+        <a href="/home/">
+        <svg class="h-16 w-16 text-red-500"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+      </a>
+      </div>
+<div>
+    <h1 class="text-center font-sans text-6xl">{{ post.title }}</h1>
+    <h4 class="text-center font-sans">Published on {{ post.published }}</h4>
+    <div class="text-center">
+        <!-- <button id="mybutton" class=" text-blue-300">About the author</button> -->
+        <form class="" action="/api/utils/profile/" method="POST">
+            {% csrf_token %}
+            <!-- <input type="hidden" name="_csrf" value="{{ csrf_token }}" /> -->
+            <input type="hidden" id="postId" name="url" value="{{ post.author }}" />
+
+            <button class="text-blue-400">About the author</button>
+        </form>
+
+        {% if post.description %}
+        <p class="mt-5">{{post.description}}</p>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-5 gap-4 mt-12">
+        <div class="col-span-1"></div>
+        <div class="col-span-3">
+            
+            {% if post.contentType == "text/markdown" %}
+<md-block class="prose prose-lg">
+{{ post.content }}
+</md-block>
+            {% else %}
+            <p> {{ post.content }}</p>
+            {% endif %}
+        
+        
+        
+        </div>
+        <div class="col-span-1"></div>
+      </div>
+    
+</div>
+</body>
+</html>

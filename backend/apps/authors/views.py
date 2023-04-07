@@ -1,110 +1,189 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.request import Request
 from .models import Author
-from apps.posts.models import Post
-from django.http import Http404
-from .serializers import AuthorSerializer
-from apps.posts.serializers import PostSerializer
+from .serializers import AuthorSerializer, InfoSerializer, AnyProfileSerializer
+from rest_framework.generics import get_object_or_404
 from rest_framework import status
-from rest_framework.views import APIView
+from rest_framework.generics import ListAPIView, GenericAPIView
+from rest_framework.exceptions import NotAuthenticated, PermissionDenied
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.permissions import IsAuthenticated
+from django.urls import reverse_lazy
+from django.views import generic
+from .admin import CustomUserCreationForm, CustomUserChangeForm
+# from apps.authors.remoteauth import RemoteAuth
+from django.shortcuts import render
+import requests
+from requests import Response as res
+from urllib.parse import urlparse
+from django.conf import settings
+from django.http import Http404
+from django.shortcuts import redirect
+from apps.posts.models import Post
+from apps.followers.models import Follow
+import json
+import ast
+
 # Create your views here.
 
-
-@api_view(['GET'])
-def authors_paginated(request: Request, page: int = 10, size: int = 5):
-    """
-    /authors?page=10&size=5
-
-    GET (local, remote): retrieve all profiles on the server (paginated) 
-    """
-    page = request.GET.get('page', '')
-    size = request.GET.get('size', '')
-
-    if page == '':
-        page = 10
-    if size == '':
-        size = 5
-
-    try:
-        page = int(page)
-        assert page > 0
-    except Exception as e:
-        page = 10
-
-    try:
-        size = int(size)
-        assert size > 0
-    except Exception as e:
-        size = 5
-
-    return Response({"message": f"Viewing {page} pages with {size} authors per page"})
+def Test(request):
+    author = request.user
+    if not author.is_active:
+        return redirect(reverse_lazy('login'))
+    # numposts = len(Post.objects.filter(author=author))
+    # numfollowers =  len(Follow.objects.filter(object=author))
+    # # numfollowing = len(Follow.objects.filter(actor=author.build_author_id()))
+    context = {}
+    return render(request, 'test.html', context)
 
 
-# @api_view(['GET'])
-# def all_authors(request: Request):
-#     """
-#     /authors/
 
-#     GET (local, remote): Used to view all authors
-#     """
-#     return Response({"message": "Viewing all authors"})
+#https://learndjango.com/tutorials/django-signup-tutorial
+class SignUp(generic.CreateView):
+    form_class = CustomUserCreationForm
+    success_url = "/login/"
+    template_name = "signup.html"
+
+class EditProfile(generic.UpdateView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = AuthorSerializer
+    pagination_class = None
+
+    # form_class = CustomUserChangeForm
+
+    success_url = "/profile/"
+    template_name = "edit-profile.html"
+    model = Author
+
+    fields = ['displayName', 'github', 'profileImage']
+
+    def get_object(self):
+        author = self.request.user
+        if not author.is_active:
+            return redirect(reverse_lazy('login'))
+        return author
+
+    # def dispatch(self, request, *args, **kwargs):
+    #     author = request.user
+    #     if not author.is_active:
+    #         return redirect(reverse_lazy('login'))
+    #     self.object = author
+    #     return super().dispatch(request, *args, **kwargs)
+
+    
 
 
-class Author_All(APIView):
-
-    def get(self, request, format=None):
-        """
-        /authors/
-
-        GET (local, remote): Used to view all authors
-        """
-        query_set = Author.objects.all()
-        serializer = AuthorSerializer(query_set, many=True)
+class MyInfo(GenericAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = InfoSerializer
+    pagination_class = None
+    
+    def get(self, request):
+        serializer = self.serializer_class(request.user)
         return Response(serializer.data)
+    
 
-    def post(self, request, format=None):
-        """
-        /authors/
+def LocalProfileEdit(request):
+    author = request.user
+    if not author.is_active:
+        return redirect(reverse_lazy('login'))
+    numposts = len(Post.objects.filter(author=author))
+    numfollowers =  len(Follow.objects.filter(object=author))
+    # numfollowing = len(Follow.objects.filter(actor=author.build_author_id()))
+    return render(request, 'profile-edit.html', {"author": author, "numposts": numposts, "numfollowers" : numfollowers})#, "numfollowing": numfollowing })
 
-        POST (test): Used to create an author (put author_id in the json)
-        """
-        serializer = AuthorSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
+from rest_framework.decorators import parser_classes
+class AnyProfileView(GenericAPIView):
+    """
+    Used to render an author's profile, except the profile can be from any of our connected teams.
+    POST request body just requires the url to fetch the author's profile.
+    """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    serializer_class = AnyProfileSerializer
+    pagination_class = None
+    parser_classes = [FormParser, JSONParser, MultiPartParser]
+
+    def post(self, request: Request):
+
+        serializer = AnyProfileSerializer(data=request.data)
+        if not serializer.is_valid():
+            print("here")
+            print(request.data["url"])
+            d = ast.literal_eval(request.data["url"])
+            print(d["id"])
+            print(type(d))
+            serializer = AnyProfileSerializer(data={"url": d["id"]})
+            serializer.is_valid(raise_exception=True)
+        print("here2")
+        url = serializer.validated_data["url"]
+        if not url.endswith('/'):
+            url = url + '/'
+
+        host = urlparse(url).hostname
+
+        if host in settings.CONNECTED_TEAMS:
+            user = settings.CONNECTED_TEAMS[host]["username"]
+            password = settings.CONNECTED_TEAMS[host]["password"]
+            r : res = requests.get(url, auth=(user, password))
+            context = r.json()
+
+            # can we get numposts and numfollowers here?
+
+            print(context["url"])
+            r_posts : res = requests.get(context["url"] + '/posts/', auth=(user, password))
+            if r_posts.status_code == 200 and 'count' in r_posts.json().keys():
+                context["numposts"] = r_posts.json()['count']
+            else:
+                context["numposts"] = "?"
 
 
-# @api_view(['GET', 'POST'])
-# def single_author(request: Request, author_id: str):
-#     """
-#     /authors/{author_id}/
+            r_followers : res = requests.get(context["url"] + '/followers/', auth=(user, password))
+            if r_followers.status_code == 200 and 'count' in r_followers.json().keys():
+                context["numfollowers"] = r_followers.json()['count']
+            else:
+                context["numfollowers"] = "?"
 
-#     GET (local, remote): retrieve AUTHOR_ID profile
-
-#     POST (local): update AUTHOR_ID profile
-#     """
-
-#     if request.method == 'GET':
-#         return Response({"message": f"Viewing author {author_id}"})
-
-#     elif request.method == 'POST':
-#         return Response({"message": f"Updating author {author_id}"})
-
-
-class Author_Individual(APIView):
-
-    def get_object(self, id, format=None):
-        """
-        Gets a query from the database.
-        """
-        try:
-            return Author.objects.get(id=id)
-        except:
-            Author.DoesNotExist
+            return render(request, 'profile-view.html', context)
+        else:
             raise Http404
+
+
+class Author_All(ListAPIView):
+    """
+    /authors/
+
+    GET (local, remote): Used to view all authors
+    """
+    serializer_class = AuthorSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Author.objects.all()
+    
+    def get(self, request, *args, **kwargs):
+        # is_remote = RemoteAuth(request=request)
+        # if not is_remote:
+        #     response = Response('Authentication credentials were not provided.', status=status.HTTP_401_UNAUTHORIZED)
+        #     response['WWW-Authenticate'] = 'Basic realm="Enter your REMOTE credentials", charset="UTF-8"'
+        #     return response
+        return super().get(request)
+
+
+class Author_Individual(GenericAPIView):
+    serializer_class = AuthorSerializer
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+    lookup_field = 'id'
+    lookup_url_kwarg = 'author_id'
+
+    def get_queryset(self):
+        return Author.objects.all()
+
 
     def get(self, request, author_id, format=None):
         """
@@ -112,65 +191,41 @@ class Author_Individual(APIView):
         
         GET (local, remote): retrieve AUTHOR_ID profile
         """
-        query = self.get_object(author_id)
-        serializer = AuthorSerializer(query)
+        author = get_object_or_404(queryset=self.get_queryset(), id=author_id)
+        serializer = self.serializer_class(author)
         return Response(serializer.data)
 
-    def post(self, request, author_id, format=None):
+    def post(self, request: Request, author_id, format=None):
         """
         /authors/{author_id}/
         
         POST (local): update AUTHOR_ID profile
         """
-        query = self.get_object(author_id)
-        serializer = AuthorSerializer(query, data=request.data)
+        author = get_object_or_404(queryset=self.get_queryset(), id=author_id)
+
+
+        # do we have permission to edit this author?
+
+        if not request.user.is_active:
+            raise NotAuthenticated
+
+        auth = False
+        if request.user.is_staff:
+            auth = True
+        elif str(request.user) == author_id:
+            auth = True
+
+        if not auth:
+            raise PermissionDenied
+
+
+        serializer = self.serializer_class(author, data=request.data)
+
         if serializer.is_valid():
+            if 'id' in serializer.validated_data.keys():
+                if serializer.validated_data['id'] != author.id:
+                    return Response("Changing author_id not allowed", status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             return Response(serializer.data)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    """
-    ALERT
-    When you POST author with the id, you have to pass the id inside the json. 
-
-    Example - 
-    url: http://127.0.0.1:5454/authors/9de17f29c12e8f97bcbbd34cc908f1baba40658e
-    id: 9de17f29c12e8f97bcbbd34cc908f1baba40658e
-    """
-
-    # def post(self, request, author_id, format=None):
-    #     obj = Author_All
-    #     Author_All.post(request)
-
-
-# class Author_Post(APIView):
-
-#     def get_object(self, id, format=None):
-#         """
-#         Gets a query from the database.
-#         """
-#         query_set = Post.objects.filter(author_id__pk=id)
-#         if query_set:
-#             return query_set
-#         raise Http404
-
-#     def get(self, request, author_id, format=None):
-#         """
-#         GET baseurl/authors/<author_id>/posts/
-#         """
-#         query = self.get_object(author_id)
-#         serializer = PostSerializer(query, many=True)
-#         return Response(serializer.data)
-
-#     def post(self, request, author_id, format=None):
-#         """
-#         POST baseurl/authors/<authors_id>/posts/
-#         You have to put the post_id in the json.
-#         """
-#         serializer = PostSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
